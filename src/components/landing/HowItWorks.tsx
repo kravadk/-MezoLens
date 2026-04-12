@@ -8,8 +8,8 @@ export default function HowItWorks() {
   const steps = [
     {
       num: '01',
-      title: 'Deposit BTC into the vault',
-      text: 'Send any amount. Choose Conservative, Balanced, or Aggressive.',
+      title: 'Deposit BTC as collateral',
+      text: 'Send any amount of BTC. MezoLens locks it on-chain as veBTC collateral — you keep full ownership.',
       badge: '~30 seconds',
       badgeColor: 'bg-[#E2F0E5] text-[#1A8C52]',
       icon: (
@@ -27,57 +27,74 @@ export default function HowItWorks() {
     },
     {
       num: '02',
-      title: 'Rewards compound every epoch',
-      text: 'veBTC rewards are claimed and re-locked automatically. Your BTC earns BTC.',
-      badge: 'Every 7 days, forever',
-      badgeColor: 'bg-[#E2F0E5] text-[#1A8C52]',
+      title: 'Borrow MUSD at 1% fixed',
+      text: 'MezoLens opens a CDP on Mezo Borrow and mints MUSD against your BTC at a fixed 1% borrowing rate — no variable rates, no surprises.',
+      badge: '1% fixed rate',
+      badgeColor: 'bg-[#E5E8FD] text-[#5B6DEC]',
       icon: (
-        <div className="w-12 h-12 rounded-full bg-[#1A8C52] flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        <div className="w-12 h-12 rounded-full bg-[#5B6DEC] flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
         </div>
       ),
       visual: (
-        <div className="w-full h-28 flex items-center justify-center">
-          <div className="relative w-14 h-14">
-            <svg viewBox="0 0 64 64" className="w-full h-full transform -rotate-90">
-              <circle cx="32" cy="32" r="28" fill="none" stroke="#F0F0F0" strokeWidth="6" />
-              <motion.circle cx="32" cy="32" r="28" fill="none" stroke="#1A8C52" strokeWidth="6" strokeDasharray="176"
-                initial={{ strokeDashoffset: 176 }} animate={{ strokeDashoffset: [176, 0, 176] }}
-                transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }} />
-            </svg>
-            <div className="absolute inset-0 flex items-center justify-center text-[#1A8C52] font-bold text-xs">+₿</div>
+        <div className="w-full h-28 flex items-center justify-center gap-4">
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-10 h-10 rounded-full bg-[#1A8C52] flex items-center justify-center text-white font-bold text-sm">₿</div>
+            <span className="text-[10px] text-[#888] font-bold">BTC</span>
+          </div>
+          <motion.div
+            animate={{ x: [0, 6, 0] }}
+            transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="text-[#5B6DEC] text-xl font-bold"
+          >→</motion.div>
+          <div className="flex flex-col items-center gap-1">
+            <div className="w-12 h-10 rounded-xl bg-[#5B6DEC]/10 border border-[#5B6DEC]/30 flex items-center justify-center text-[#5B6DEC] font-bold text-xs">MUSD</div>
+            <span className="text-[10px] text-[#5B6DEC] font-bold">1% fixed</span>
           </div>
         </div>
       )
     },
     {
       num: '03',
-      title: 'MEZO boost optimized',
-      text: 'veMEZO lock managed for optimal duration and maximum multiplier.',
-      badge: 'Up to 5x',
+      title: 'MUSD earns LP yield',
+      text: 'Minted MUSD is deployed into Mezo Swap liquidity pools. LP fees and rewards flow back — more than covering the 1% borrow cost.',
+      badge: 'Net positive yield',
       badgeColor: 'bg-[#FFF4E5] text-[#D4940A]',
       icon: (
-        <div className="w-12 h-12 rounded-full bg-[#1A8C52] flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        <div className="w-12 h-12 rounded-full bg-[#D4940A] flex items-center justify-center">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
         </div>
       ),
       visual: (
         <div className="w-full h-28 flex items-center justify-center">
-          <motion.div animate={{ scale: [1, 1.2, 1.4, 1.6, 1], opacity: [0.5, 0.7, 0.9, 1, 0.5] }}
-            transition={{ duration: 5, repeat: Infinity, times: [0, 0.25, 0.5, 0.75, 1] }}
-            className="text-[42px] font-[800] text-[#1A8C52]">5x</motion.div>
+          <div className="relative">
+            <motion.div
+              animate={{ scale: [1, 1.08, 1], opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-16 h-16 rounded-full bg-[#D4940A]/10 border-2 border-[#D4940A]/30 flex items-center justify-center text-[#D4940A] font-bold text-xs text-center leading-tight"
+            >LP<br/>Pool</motion.div>
+            {['LP fee', '+yield', 'MUSD'].map((label, i) => (
+              <motion.div
+                key={i}
+                animate={{ opacity: [0, 1, 0] }}
+                transition={{ duration: 2, repeat: Infinity, delay: i * 0.6 }}
+                className="absolute text-[10px] font-bold text-[#D4940A]"
+                style={{ top: `${['-16px', '50%', 'calc(100% + 4px)'][i]}`, left: `${['50%', '-36px', '50%'][i]}`, transform: 'translateX(-50%)' }}
+              >{label}</motion.div>
+            ))}
+          </div>
         </div>
       )
     },
     {
       num: '04',
-      title: 'Compound yield grows exponentially',
-      text: 'Month 12 earns more than month 2 — because compounded rewards earn their own rewards.',
+      title: 'Auto-compound every epoch',
+      text: 'Yield is claimed, MUSD repaid, BTC re-locked, and rewards compounded — every 7 days, automatically. No manual steps, no missed epochs.',
       badge: '∞ automatic',
       badgeColor: 'bg-[#E2F0E5] text-[#1A8C52]',
       icon: (
         <div className="w-12 h-12 rounded-full bg-[#1A8C52] flex items-center justify-center">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18.178 8c5.096 0 5.096 8 0 8-5.095 0-7.133-8-12.739-8-5.096 0-5.096 8 0 8 5.096 0 7.253-8 12.739-8z"/></svg>
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
         </div>
       ),
       visual: (
@@ -115,7 +132,7 @@ export default function HowItWorks() {
     <section className="bg-[#F5F8F5] pt-14 pb-10">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 mb-6">
         <h2 className="text-[26px] font-[700] text-[#1A1A1A] mb-2">How it works</h2>
-        <p className="text-[15px] text-[#888]">60 seconds from deposit to auto-compound.</p>
+        <p className="text-[15px] text-[#888]">BTC → MUSD → yield → compound. Every epoch, on-chain.</p>
       </div>
 
       {/* Horizontal scroll cards */}

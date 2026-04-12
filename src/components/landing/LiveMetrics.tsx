@@ -8,7 +8,7 @@ import { MEZOLENS_CONTRACTS, EARN_VAULT_ABI } from '../../config/contracts';
 
 export default function LiveMetrics() {
   const [hasViewed, setHasViewed] = useState(false);
-  const [stats, setStats] = useState({ totalBtc: 0, compounded: 0, positions: 0, bestApr: 15 });
+  const [stats, setStats] = useState({ totalBtc: 0, compounded: 0, positions: 0, musdCapacity: 0 });
 
   useEffect(() => {
     const load = async () => {
@@ -20,11 +20,14 @@ export default function LiveMetrics() {
           chainId: mezoTestnet.id,
         }) as any;
 
+        const btcLocked = parseFloat(parseFloat(formatUnits(result.totalBtcLocked, 18)).toFixed(6));
+        // MUSD capacity: BTC value / 1.8 collateral ratio (at $96,500/BTC)
+        const musdCap = Math.floor(btcLocked * 96500 / 1.8);
         setStats({
-          totalBtc: parseFloat(parseFloat(formatUnits(result.totalBtcLocked, 18)).toFixed(6)),
+          totalBtc: btcLocked,
           compounded: parseFloat(parseFloat(formatUnits(result.totalCompounded, 18)).toFixed(6)),
           positions: Number(result.totalPositions),
-          bestApr: 15,
+          musdCapacity: musdCap,
         });
       } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('RPC:', e); }
     };
@@ -61,14 +64,14 @@ export default function LiveMetrics() {
       progress: 82,
     },
     {
-      label: 'Best APR',
-      icon: '🔥',
-      value: stats.bestApr,
+      label: 'MUSD Capacity',
+      icon: '💵',
+      value: stats.musdCapacity,
       decimals: 0,
-      trend: 'Aggressive',
-      trendColor: 'amber',
-      subtitle: 'with compound boost',
-      progress: 92,
+      trend: '1% rate',
+      trendColor: 'blue',
+      subtitle: 'borrowable at 1% fixed',
+      progress: 71,
     },
   ];
 
@@ -113,7 +116,7 @@ export default function LiveMetrics() {
                   ) : (
                     '0'
                   )}
-                  {metric.label === 'Best APR' && '%'}
+                  {metric.label === 'MUSD Capacity' && <span className="text-[18px] ml-1">MUSD</span>}
                 </span>
                 <motion.span
                   initial={{ scale: 0 }}
@@ -122,6 +125,8 @@ export default function LiveMetrics() {
                   className={`text-[11px] font-bold px-2 py-0.5 rounded-full mb-1 ${
                     metric.trendColor === 'amber'
                       ? 'bg-[#FFF4E5] text-[#D4940A]'
+                      : metric.trendColor === 'blue'
+                      ? 'bg-[#E5E8FD] text-[#5B6DEC]'
                       : 'bg-[#E2F0E5] text-[#1A8C52]'
                   }`}
                 >

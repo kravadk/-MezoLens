@@ -22,7 +22,7 @@ const strategies = [
     apr: '5 – 7%',
     risk: 'Low',
     boost: '1x',
-    features: ['Lock BTC as veBTC', 'Auto-compound rewards', 'Earn base protocol fees'],
+    features: ['Lock BTC as veBTC', 'Borrow MUSD at 1% fixed', 'Auto-compound rewards'],
     color: '#1A8C52',
     icon: <Shield className="w-6 h-6" />,
   },
@@ -130,7 +130,7 @@ export function Deposit() {
     setCurrentStep((s) => Math.min(s + 1, steps.length - 1));
   };
   const prevStep = () => setCurrentStep((s) => Math.max(s - 1, 0));
-  const canEnableMusd = selectedStrategy === 'balanced' || selectedStrategy === 'aggressive';
+  const canEnableMusd = !!selectedStrategy; // MUSD available for all strategies
   const strategyObj = strategies.find(s => s.id === selectedStrategy);
 
   if (!isWalletConnected) {
@@ -309,8 +309,8 @@ export function Deposit() {
                             <Zap className="w-5 h-5 text-strategy-balanced" />
                           </div>
                           <div>
-                            <h4 className="text-[15px] font-bold text-mezo-black">Enable MUSD Yield</h4>
-                            <p className="text-[12px] text-mezo-grey">Route part of rewards through MUSD LP</p>
+                            <h4 className="text-[15px] font-bold text-mezo-black">MUSD Yield <span className="text-[11px] font-semibold text-strategy-conservative bg-strategy-conservative/10 px-2 py-0.5 rounded-full ml-1">Recommended</span></h4>
+                            <p className="text-[12px] text-mezo-grey">Borrow MUSD at 1% → deploy to LP → earn net yield</p>
                           </div>
                         </div>
                         <button
@@ -348,12 +348,12 @@ export function Deposit() {
                             <span>50%</span>
                           </div>
                           <p className="text-[12px] text-mezo-grey">
-                            {musdPercent}% of your compound rewards will be routed through MUSD LP for additional yield.
+                            {musdPercent}% of rewards routed: BTC collateral → MUSD borrowed at 1% → LP yield → auto-repay → compound.
                           </p>
-                          <div className="flex items-center gap-2 p-3 bg-strategy-aggressive/5 rounded-xl border border-strategy-aggressive/20">
-                            <Info className="w-4 h-4 text-strategy-aggressive shrink-0" />
-                            <p className="text-[11px] text-strategy-aggressive font-medium">
-                              This adds a 1% borrow cost. Net positive only if LP APR &gt; 1%.
+                          <div className="flex items-center gap-2 p-3 bg-strategy-conservative/5 rounded-xl border border-strategy-conservative/20">
+                            <Info className="w-4 h-4 text-strategy-conservative shrink-0" />
+                            <p className="text-[11px] text-strategy-conservative font-medium">
+                              1% borrow cost. Mezo LP pools currently yield 5–15% — net positive for all active strategies.
                             </p>
                           </div>
                         </motion.div>
@@ -363,10 +363,8 @@ export function Deposit() {
                 )}
 
                 <InfoCallout>
-                  {selectedStrategy === 'conservative'
-                    ? 'Your BTC will be locked as veBTC to earn base protocol fees.'
-                    : 'Staking MEZO boosts your BTC yield by up to ' + (selectedStrategy === 'aggressive' ? '5x' : '2x') + '.'
-                  }
+                  Your BTC is locked as veBTC collateral. MezoLens borrows MUSD at 1% fixed rate and deploys it for LP yield — net positive after borrow costs.
+                  {(selectedStrategy === 'balanced' || selectedStrategy === 'aggressive') && ` Add MEZO to boost rewards by up to ${selectedStrategy === 'aggressive' ? '5x' : '2x'}.`}
                 </InfoCallout>
               </div>
             </motion.div>
@@ -416,10 +414,14 @@ export function Deposit() {
                       <span className="text-[14px] text-mezo-grey">Boost</span>
                       <span className="text-[14px] font-extrabold text-mezo-black">{strategyObj?.boost}</span>
                     </div>
+                    <div className="flex justify-between items-center">
+                      <span className="text-[14px] text-mezo-grey">MUSD Borrow Rate</span>
+                      <span className="text-[14px] font-extrabold text-strategy-conservative">1% fixed</span>
+                    </div>
                     {musdEnabled && (
                       <div className="flex justify-between items-center">
-                        <span className="text-[14px] text-mezo-grey">MUSD Yield</span>
-                        <span className="text-[14px] font-extrabold text-strategy-balanced">{musdPercent}% allocation</span>
+                        <span className="text-[14px] text-mezo-grey">MUSD Allocation</span>
+                        <span className="text-[14px] font-extrabold text-strategy-balanced">{musdPercent}% of rewards</span>
                       </div>
                     )}
                   </div>

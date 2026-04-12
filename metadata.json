@@ -1,6 +1,6 @@
 {
   "name": "MezoLens",
-  "description": "Auto-compound yield vault for Mezo Earn. Deposit BTC once, earn forever. Auto-compound, auto-boost, auto-vote. Yearn Finance for Bitcoin on Mezo.",
+  "description": "Self-service Bitcoin banking on Mezo. Deposit BTC, borrow MUSD at 1% fixed rate, deploy for LP yield, auto-compound everything — every epoch, on-chain, no intermediaries.",
   "track": "MEZO Utilization",
   "contracts": {
     "network": "Mezo Testnet (Chain ID: 31611)",
