@@ -12,15 +12,28 @@ export interface EpochData {
   feeBreakdown: { swap: number; borrow: number; bridge: number };
 }
 
-export function useEpochData(): EpochData {
-  const [epoch, setEpoch] = useState<EpochData>({
-    number: 0,
-    startTime: 0,
-    endTime: 0,
-    progress: 0,
-    timeRemaining: { days: 0, hours: 0, minutes: 0 },
+function buildFallbackEpoch() {
+  const now = Date.now();
+  const epochDuration = 7 * 24 * 60 * 60 * 1000;
+  const epochStart = now - epochDuration * 0.72;
+  const epochEnd = epochStart + epochDuration;
+  const remaining = Math.max(epochEnd - now, 0);
+  return {
+    number: 42,
+    startTime: epochStart / 1000,
+    endTime: epochEnd / 1000,
+    progress: 72,
+    timeRemaining: {
+      days: Math.floor(remaining / (24 * 60 * 60 * 1000)),
+      hours: Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)),
+      minutes: Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000)),
+    },
     feeBreakdown: { swap: 58, borrow: 31, bridge: 11 },
-  });
+  };
+}
+
+export function useEpochData(): EpochData {
+  const [epoch, setEpoch] = useState<EpochData>(buildFallbackEpoch);
 
   useEffect(() => {
     const load = async () => {
@@ -53,25 +66,7 @@ export function useEpochData(): EpochData {
           feeBreakdown: { swap: 58, borrow: 31, bridge: 11 },
         });
       } catch {
-        // Fallback to mock if contract read fails
-        const now = Date.now();
-        const epochDuration = 7 * 24 * 60 * 60 * 1000;
-        const epochStart = now - (epochDuration * 0.72);
-        const epochEnd = epochStart + epochDuration;
-        const remaining = Math.max(epochEnd - now, 0);
-
-        setEpoch({
-          number: 1,
-          startTime: epochStart / 1000,
-          endTime: epochEnd / 1000,
-          progress: 72,
-          timeRemaining: {
-            days: Math.floor(remaining / (24 * 60 * 60 * 1000)),
-            hours: Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)),
-            minutes: Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000)),
-          },
-          feeBreakdown: { swap: 58, borrow: 31, bridge: 11 },
-        });
+        // Keep fallback (already set as initial state)
       }
     };
 

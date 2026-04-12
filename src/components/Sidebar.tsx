@@ -13,7 +13,8 @@ import {
 import { useStore } from '../store';
 import { useUIStore, type Page } from '../store/uiStore';
 import { cn } from '../lib/utils';
-import { useEpochCountdown } from '../hooks/useCountdown';
+import { useCountdown } from '../hooks/useCountdown';
+import { useEpochData } from '../hooks/useEpochData';
 
 const navItems: { label: string; icon: React.ElementType; page: Page }[] = [
   { label: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
@@ -27,7 +28,8 @@ const navItems: { label: string; icon: React.ElementType; page: Page }[] = [
 export function Sidebar() {
   const { currentPage, setCurrentPage, isWalletConnected, walletAddress, connectWallet, disconnectWallet } = useStore();
   const { openWalletModal } = useUIStore();
-  const epochTimer = useEpochCountdown(Math.floor(Date.now() / 1000));
+  const epochData = useEpochData();
+  const epochTimer = useCountdown(epochData.endTime);
 
   return (
     <div className="w-[220px] bg-mezo-sidebar h-screen flex flex-col text-white fixed left-0 top-0 bottom-0 z-50 border-r border-mezo-black">
@@ -67,9 +69,11 @@ export function Sidebar() {
             <span className="text-[12px] text-mezo-lime font-bold">Mezo Testnet</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Epoch 42</span>
+            <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Epoch {epochData.number || 42}</span>
             <span className="text-[11px] text-white font-mono">
-              {String(epochTimer.hours).padStart(2, '0')}:{String(epochTimer.minutes).padStart(2, '0')}:{String(epochTimer.seconds).padStart(2, '0')}
+              {epochTimer.days > 0
+                ? `${epochTimer.days}d ${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}`
+                : `${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}:${String(epochTimer.seconds).padStart(2, '0')}`}
             </span>
           </div>
         </div>

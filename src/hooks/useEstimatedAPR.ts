@@ -43,10 +43,12 @@ export function useEstimatedAPR(): StrategyAPRs {
           }),
         ]);
 
+        // Contract returns bps with extra *100 factor: mockRewardRate * 52 * 100
+        // Divide by 10000 to get percentage (e.g. 624000 → 62.4%)
         setAprs({
-          conservative: Number(c as bigint) / 100,
-          balanced: Number(b as bigint) / 100,
-          aggressive: Number(a as bigint) / 100,
+          conservative: Number(c as bigint) / 10000,
+          balanced: Number(b as bigint) / 10000,
+          aggressive: Number(a as bigint) / 10000,
         });
       } catch {
         // Keep defaults
