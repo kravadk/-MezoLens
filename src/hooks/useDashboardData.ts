@@ -19,13 +19,25 @@ export function useDashboardData() {
     Conservative: `${aprs.conservative.toFixed(1)}%`,
   };
 
-  const positions = rawPositions.map(p => ({
-    id: p.id,
-    strategy: p.strategy,
-    amount: `${(p.btcDeposited + p.btcCompounded).toFixed(6)} BTC`,
-    apr: aprMap[p.strategy] || `${aprs.conservative.toFixed(1)}%`,
-    compoundGain: `+${p.btcCompounded.toFixed(6)} BTC`,
-    color: p.strategy === 'Aggressive' ? '#D4940A' : p.strategy === 'Balanced' ? '#5B6DEC' : '#1A8C52',
+  // Group positions by strategy for the dashboard summary
+  const grouped = rawPositions.reduce((acc, p) => {
+    const key = p.strategy;
+    if (!acc[key]) {
+      acc[key] = { strategy: key, totalBtc: 0, totalGains: 0, count: 0 };
+    }
+    acc[key].totalBtc += p.btcDeposited + p.btcCompounded;
+    acc[key].totalGains += p.btcCompounded;
+    acc[key].count += 1;
+    return acc;
+  }, {} as Record<string, { strategy: string; totalBtc: number; totalGains: number; count: number }>);
+
+  const positions = Object.values(grouped).map(g => ({
+    id: g.strategy, // unique key for rendering
+    strategy: g.strategy,
+    amount: `${g.totalBtc.toFixed(6)} BTC${g.count > 1 ? ` (${g.count})` : ''}`,
+    apr: aprMap[g.strategy] || `${aprs.conservative.toFixed(1)}%`,
+    compoundGain: `+${g.totalGains.toFixed(6)} BTC`,
+    color: g.strategy === 'Aggressive' ? '#D4940A' : g.strategy === 'Balanced' ? '#5B6DEC' : '#1A8C52',
   }));
 
   // Build performance data from compound history
