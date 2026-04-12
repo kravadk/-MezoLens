@@ -56,6 +56,28 @@ export const EARN_VAULT_ABI = [
   { name: 'Withdrawn', type: 'event', inputs: [{ name: 'user', type: 'address', indexed: true }, { name: 'positionId', type: 'uint256' }, { name: 'btcReturned', type: 'uint256' }, { name: 'mezoReturned', type: 'uint256' }, { name: 'feesPaid', type: 'uint256' }] },
 ] as const;
 
+// Mezo Passport — SBT NFT (ERC-721) for user identity
+// Address: update when official testnet address is published
+export const MEZO_PASSPORT_ADDRESS = '0x0000000000000000000000000000000000000000' as `0x${string}`;
+export const MEZO_PASSPORT_ABI = [
+  { name: 'balanceOf', type: 'function', stateMutability: 'view', inputs: [{ name: 'owner', type: 'address' }], outputs: [{ name: '', type: 'uint256' }] },
+  { name: 'tokenOfOwnerByIndex', type: 'function', stateMutability: 'view', inputs: [{ name: 'owner', type: 'address' }, { name: 'index', type: 'uint256' }], outputs: [{ name: '', type: 'uint256' }] },
+] as const;
+
+// MusdPipe ABI — CDP management
+export const MUSD_PIPE_ABI = [
+  { name: 'getCDPFor', type: 'function', stateMutability: 'view', inputs: [{ name: 'positionId', type: 'uint256' }], outputs: [{ name: '', type: 'tuple', components: [
+    { name: 'collateral', type: 'uint256' }, { name: 'debt', type: 'uint256' },
+    { name: 'lpTokens', type: 'uint256' }, { name: 'lpDeployed', type: 'uint256' },
+    { name: 'totalYield', type: 'uint256' }, { name: 'active', type: 'bool' }
+  ]}] },
+  { name: 'getHealthFor', type: 'function', stateMutability: 'view', inputs: [{ name: 'positionId', type: 'uint256' }], outputs: [{ name: 'ratio', type: 'uint256' }, { name: 'liqPrice', type: 'uint256' }, { name: 'safe', type: 'bool' }] },
+  { name: 'openCDPFor', type: 'function', stateMutability: 'payable', inputs: [{ name: 'positionId', type: 'uint256' }], outputs: [{ name: 'musdMinted', type: 'uint256' }] },
+  { name: 'closeCDPFor', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'positionId', type: 'uint256' }], outputs: [{ name: 'btcReturned', type: 'uint256' }] },
+  { name: 'harvestLPFor', type: 'function', stateMutability: 'nonpayable', inputs: [{ name: 'positionId', type: 'uint256' }], outputs: [{ name: 'yield', type: 'uint256' }] },
+  { name: 'useMockData', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ name: '', type: 'bool' }] },
+] as const;
+
 // FeeCollector ABI
 export const FEE_COLLECTOR_ABI = [
   { name: 'getTotalCollected', type: 'function', stateMutability: 'view', inputs: [], outputs: [{ name: 'performance', type: 'uint256' }, { name: 'management', type: 'uint256' }, { name: 'spread', type: 'uint256' }, { name: 'total', type: 'uint256' }] },

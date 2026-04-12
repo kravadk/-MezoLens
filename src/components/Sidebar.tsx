@@ -6,19 +6,23 @@ import {
   BarChart3,
   ClipboardList,
   Building2,
-  Eye,
   Wallet,
-  LogOut
+  LogOut,
+  Landmark,
+  ShieldCheck,
+  ShieldAlert,
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useUIStore, type Page } from '../store/uiStore';
 import { cn } from '../lib/utils';
 import { useCountdown } from '../hooks/useCountdown';
 import { useEpochData } from '../hooks/useEpochData';
+import { usePassport } from '../hooks/usePassport';
 
-const navItems: { label: string; icon: React.ElementType; page: Page }[] = [
+const navItems: { label: string; icon: React.ElementType; page: Page; badge?: string }[] = [
   { label: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
   { label: 'Deposit', icon: ArrowDownToLine, page: 'Deposit' },
+  { label: 'Banking', icon: Landmark, page: 'Banking', badge: 'MUSD' },
   { label: 'Calculator', icon: Calculator, page: 'Calculator' },
   { label: 'Transparency', icon: BarChart3, page: 'Transparency' },
   { label: 'My Positions', icon: ClipboardList, page: 'My Positions' },
@@ -30,6 +34,7 @@ export function Sidebar() {
   const { openWalletModal } = useUIStore();
   const epochData = useEpochData();
   const epochTimer = useCountdown(epochData.endTime);
+  const passportStatus = usePassport();
 
   return (
     <div className="w-[220px] bg-mezo-sidebar h-screen flex flex-col text-white fixed left-0 top-0 bottom-0 z-50 border-r border-mezo-black">
@@ -56,13 +61,26 @@ export function Sidebar() {
                 "w-5 h-5 transition-colors",
                 isActive ? "text-mezo-sidebar" : "text-mezo-grey group-hover:text-white"
               )} />
-              <span className="text-[14px] font-medium">{item.label}</span>
+              <span className="text-[14px] font-medium flex-1">{item.label}</span>
+              {item.badge && (
+                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#5B6DEC]/20 text-[#5B6DEC]">
+                  {item.badge}
+                </span>
+              )}
             </button>
           );
         })}
       </nav>
 
       <div className="p-6 space-y-4">
+        {isWalletConnected && (
+          <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-[11px] font-bold ${passportStatus === 'verified' ? 'bg-strategy-conservative/10 text-strategy-conservative' : 'bg-[#D4940A]/10 text-[#D4940A]'}`}>
+            {passportStatus === 'verified'
+              ? <><ShieldCheck className="w-3.5 h-3.5" /> Passport Verified</>
+              : <><ShieldAlert className="w-3.5 h-3.5" /> Passport Required</>
+            }
+          </div>
+        )}
         <div className="bg-white/5 rounded-2xl p-4 space-y-2">
           <div className="flex items-center gap-1.5 mb-1">
             <div className="w-1.5 h-1.5 bg-mezo-lime rounded-full animate-pulse" />

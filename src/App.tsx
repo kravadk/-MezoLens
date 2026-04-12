@@ -8,6 +8,7 @@ import { Calculator } from './components/Calculator';
 import { Transparency } from './components/Transparency';
 import { MyPositions } from './components/MyPositions';
 import { VaultStats } from './components/VaultStats';
+import { Banking } from './components/Banking';
 import { LandingPage } from './components/landing/LandingPage';
 import { WalletModal } from './components/modals/WalletModal';
 import { Toast } from './components/common/Toast';
@@ -49,6 +50,7 @@ export default function App() {
       case 'Dashboard': return <Dashboard />;
       case 'Deposit': return <Deposit />;
       case 'Calculator': return <Calculator />;
+      case 'Banking': return <Banking />;
       case 'Transparency': return <Transparency />;
       case 'My Positions': return <MyPositions />;
       case 'Vault Stats': return <VaultStats />;
@@ -60,6 +62,7 @@ export default function App() {
     switch (currentPage) {
       case 'Dashboard': return { title: 'Dashboard', subtitle: 'Overview of your auto-compound vault' };
       case 'Deposit': return { title: 'New Deposit', subtitle: 'Select a strategy and lock your BTC' };
+      case 'Banking': return { title: 'Bitcoin Banking', subtitle: 'Borrow MUSD at 1% · deploy for yield · auto-repay' };
       case 'Calculator': return { title: 'Yield Calculator', subtitle: 'Simulate your compound advantage' };
       case 'Transparency': return { title: 'Transparency', subtitle: 'Real-time protocol revenue and fees' };
       case 'My Positions': return { title: 'My Positions', subtitle: 'Manage your active staking vaults' };

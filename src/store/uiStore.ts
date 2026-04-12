@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 
-export type Page = 'Landing' | 'Dashboard' | 'Deposit' | 'Calculator' | 'Transparency' | 'My Positions' | 'Vault Stats';
+export type Page = 'Landing' | 'Dashboard' | 'Deposit' | 'Banking' | 'Calculator' | 'Transparency' | 'My Positions' | 'Vault Stats';
 
 interface UIState {
   currentPage: Page;
