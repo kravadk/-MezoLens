@@ -1,0 +1,12 @@
+{
+  "name": "@mezolens/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test -vvv",
+    "test:gas": "forge test --gas-report",
+    "deploy:testnet": "forge script script/Deploy.s.sol --rpc-url mezo_testnet --broadcast --verify",
+    "clean": "forge clean"
+  }
+}

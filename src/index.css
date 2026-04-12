@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-primary: #1A8C52;
+  --color-primary-light: #C8F0A0;
+  --color-bg: #FAFBFA;
+  --color-text: #1A1A1A;
+  --color-text-muted: #777777;
+  --color-text-light: #AAAAAA;
+  --color-border: rgba(0, 0, 0, 0.04);
+  --color-card: #FFFFFF;
+
+  --color-mezo-lime: #C8F0A0;
+  --color-mezo-black: #1A1A1A;
+  --color-mezo-sidebar: #1C1C1C;
+  --color-mezo-grey: #555555;
+  --color-mezo-label: #777777;
+  --color-mezo-muted: #888888;
+  --color-mezo-border: rgba(0, 0, 0, 0.04);
+
+  --color-strategy-conservative: #1A8C52;
+  --color-strategy-balanced: #5B6DEC;
+  --color-strategy-aggressive: #D4940A;
+
+  --radius-mezo: 16px;
+}
+
+@layer base {
+  body {
+    @apply font-sans text-mezo-grey bg-white antialiased overflow-x-hidden;
+  }
+}
+
+@layer utilities {
+  .glass-card {
+    @apply bg-white border border-mezo-black;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.03);
+    border-radius: var(--radius-mezo);
+  }
+
+  .sidebar-item-active {
+    @apply bg-mezo-lime text-mezo-sidebar font-semibold;
+  }
+
+  .content-glow {
+    background: radial-gradient(circle at 50% 0%, rgba(200, 240, 160, 0.05) 0%, transparent 70%);
+  }
+}
+
+/* Glass Coin Effect */
+.glass-coin {
+  background: radial-gradient(circle at 35% 35%, rgba(200,240,160,0.5) 0%, rgba(200,240,160,0.15) 50%, rgba(200,240,160,0.05) 100%);
+  border: 2px solid rgba(26,140,82,0.2);
+  box-shadow: inset 0 -4px 8px rgba(0,0,0,0.04), inset 0 4px 8px rgba(255,255,255,0.3);
+  backdrop-filter: blur(4px);
+}
+
+.glass-highlight {
+  background: rgba(255,255,255,0.3);
+  transform: rotate(-20deg);
+  filter: blur(2px);
+}
+
+.glass-disc {
+  background: radial-gradient(circle at 30% 30%, rgba(200,240,160,0.6) 0%, rgba(200,240,160,0.2) 60%, rgba(200,240,160,0.05) 100%);
+  border: 1px solid rgba(26,140,82,0.15);
+  backdrop-filter: blur(2px);
+}
+
+/* Animations */
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-33.333%); }
+}
+
+.animate-marquee {
+  animation: marquee 35s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+@keyframes shimmer {
+  0% { background-position: -100% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-text {
+  background: linear-gradient(110deg, transparent 40%, rgba(255,255,255,0.5) 50%, transparent 60%);
+  background-size: 200% auto;
+  color: transparent;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 0.8s linear forwards;
+}
+
+.shimmer-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(to right, transparent, rgba(255,255,255,0.15), transparent);
+  transform: skewX(-20deg);
+  animation: shimmer-btn 5s infinite;
+}
+
+@keyframes shimmer-btn {
+  0%, 80% { left: -100%; }
+  100% { left: 200%; }
+}
+
+/* Hide scrollbar for horizontal scroll section */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom scrollbar for a premium feel */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-mezo-muted/20 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-mezo-muted/40;
+}
