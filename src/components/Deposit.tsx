@@ -11,6 +11,7 @@ import { InfoCallout } from './common/InfoCallout';
 import { AmountInput } from './common/AmountInput';
 import { TxStatusModal } from './modals/TxStatusModal';
 import { STRATEGIES } from '../utils/constants';
+import { useEstimatedAPR } from '../hooks/useEstimatedAPR';
 
 const steps = ['Strategy', 'Amounts', 'Preview', 'Confirm'];
 
@@ -47,16 +48,18 @@ const strategies = [
   },
 ];
 
-const projectionData = [
-  { epoch: 1, amount: 0.003, total: 0.253 },
-  { epoch: 2, amount: 0.003, total: 0.256 },
-  { epoch: 3, amount: 0.003, total: 0.259 },
-  { epoch: 4, amount: 0.003, total: 0.262 },
-  { epoch: 5, amount: 0.003, total: 0.265 },
-  { epoch: 6, amount: 0.003, total: 0.268 },
-  { epoch: 7, amount: 0.003, total: 0.271 },
-  { epoch: 8, amount: 0.003, total: 0.274 },
-];
+function buildProjection(btc: number, annualAprPct: number, epochs = 8) {
+  // weekly compound: rate per epoch = annualApr / 52
+  const epochRate = annualAprPct / 100 / 52;
+  const rows = [];
+  let running = btc;
+  for (let i = 1; i <= epochs; i++) {
+    const gain = running * epochRate;
+    running += gain;
+    rows.push({ epoch: i, amount: gain, total: running });
+  }
+  return rows;
+}
 
 export function Deposit() {
   const [currentStep, setCurrentStep] = useState(0);
@@ -72,6 +75,7 @@ export function Deposit() {
   const { openWalletModal, showToast } = useUIStore();
   const { deposit } = useEarnVault();
   const balances = useTokenBalances();
+  const aprs = useEstimatedAPR();
 
   const nextStep = () => {
     // Validate before advancing
@@ -369,7 +373,19 @@ export function Deposit() {
           )}
 
           {/* Step 3: Preview with compound projection */}
-          {currentStep === 2 && (
+          {currentStep === 2 && (() => {
+            const btcNum = parseFloat(btcAmount) || 0;
+            const selectedApr = selectedStrategy === 'aggressive'
+              ? aprs.aggressive
+              : selectedStrategy === 'balanced'
+              ? aprs.balanced
+              : aprs.conservative;
+            const baseApr = selectedApr * 0.91; // compound ~9% better than base
+            const projectionData = buildProjection(btcNum, selectedApr);
+            const withoutCompound = btcNum * (1 + selectedApr / 100 * (8 / 52));
+            const withCompound = projectionData[projectionData.length - 1]?.total || btcNum;
+            const gainPct = btcNum > 0 ? ((withCompound - withoutCompound) / withoutCompound * 100) : 0;
+            return (
             <motion.div
               key="step2"
               initial={{ opacity: 0, y: 20 }}
@@ -410,15 +426,15 @@ export function Deposit() {
                   <div className="space-y-5">
                     <div className="flex justify-between items-center">
                       <span className="text-[14px] text-mezo-grey">Base APR</span>
-                      <span className="text-[14px] font-extrabold text-mezo-black">8.4%</span>
+                      <span className="text-[14px] font-extrabold text-mezo-black">{baseApr.toFixed(1)}%</span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-[14px] text-mezo-grey">Compound APR</span>
-                      <span className="text-[14px] font-extrabold text-strategy-conservative">9.2%</span>
+                      <span className="text-[14px] font-extrabold text-strategy-conservative">{selectedApr.toFixed(1)}%</span>
                     </div>
                     <div className="flex justify-between items-center pt-5 border-t border-mezo-black">
                       <span className="text-[16px] font-extrabold text-mezo-black">Total APR</span>
-                      <span className="text-[28px] font-extrabold text-strategy-conservative">9.2%</span>
+                      <span className="text-[28px] font-extrabold text-strategy-conservative">{selectedApr.toFixed(1)}%</span>
                     </div>
                   </div>
                 </div>
@@ -431,17 +447,17 @@ export function Deposit() {
                   {projectionData.map((row) => (
                     <div key={row.epoch} className="flex items-center gap-4 text-[13px]">
                       <span className="text-mezo-grey font-bold w-16">Epoch {row.epoch}</span>
-                      <span className="text-strategy-conservative font-bold">+{row.amount.toFixed(3)} BTC</span>
+                      <span className="text-strategy-conservative font-bold">+{row.amount.toFixed(8)} BTC</span>
                       <ArrowRight className="w-3 h-3 text-mezo-grey" />
                       <span className="text-mezo-grey">re-locked</span>
                       <ArrowRight className="w-3 h-3 text-mezo-grey" />
-                      <span className="text-mezo-black font-extrabold">total: {row.total.toFixed(3)} BTC</span>
+                      <span className="text-mezo-black font-extrabold">total: {row.total.toFixed(8)} BTC</span>
                     </div>
                   ))}
                 </div>
                 <div className="mt-6 p-4 bg-mezo-lime/10 rounded-xl border border-mezo-lime/20">
                   <p className="text-[13px] text-mezo-sidebar font-bold">
-                    After 8 epochs: 0.274 BTC (vs 0.250 without compound = <span className="text-strategy-conservative">+9.6%</span>)
+                    After 8 epochs: {withCompound.toFixed(8)} BTC (vs {withoutCompound.toFixed(8)} without compound = <span className="text-strategy-conservative">+{gainPct.toFixed(2)}%</span>)
                   </p>
                 </div>
               </div>
@@ -468,7 +484,8 @@ export function Deposit() {
                 </div>
               </div>
             </motion.div>
-          )}
+            );
+          })()}
 
           {/* Step 4: Confirm */}
           {currentStep === 3 && (
