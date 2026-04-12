@@ -13,9 +13,9 @@ export default function Strategies() {
       features: [
         { name: 'BTC lock', active: true },
         { name: 'Auto-compound', active: true },
+        { name: 'MUSD yield at 1%', active: true },
         { name: 'MEZO boost', active: false },
         { name: 'Auto-vote', active: false },
-        { name: 'MUSD yield', active: false },
       ],
       offset: 0,
     },
@@ -30,9 +30,9 @@ export default function Strategies() {
       features: [
         { name: 'BTC lock', active: true },
         { name: 'Auto-compound', active: true },
+        { name: 'MUSD yield at 1%', active: true },
         { name: '2x MEZO boost', active: true },
         { name: 'Auto-vote', active: false },
-        { name: 'MUSD yield', active: true },
       ],
       offset: -2,
     },
@@ -46,9 +46,9 @@ export default function Strategies() {
       features: [
         { name: 'BTC lock', active: true },
         { name: 'Auto-compound', active: true },
+        { name: 'MUSD yield at 1%', active: true },
         { name: '5x MEZO boost', active: true },
         { name: 'Auto-vote', active: true },
-        { name: 'MUSD yield', active: true },
       ],
       offset: 0,
     },

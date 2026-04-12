@@ -274,30 +274,14 @@ export function MyPositions() {
       )}
 
       {/* Completed */}
-      {(filter === 'all' || filter === 'completed') && (
+      {filter === 'completed' && (
         <div className="space-y-4">
           <h2 className="text-[16px] lg:text-[18px] font-bold text-mezo-black px-1">Completed Positions</h2>
-          {completedPositions.map((pos) => (
-            <div key={pos.id} className="glass-card p-4 lg:p-6 opacity-70">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ backgroundColor: strategyColors[pos.strategy] + '15' }}>
-                    {strategyIcons[pos.strategy]}
-                  </div>
-                  <div>
-                    <h3 className="text-[15px] font-bold text-mezo-black">{pos.strategy} <span className="text-mezo-grey">(Closed)</span></h3>
-                    <div className="text-[12px] text-mezo-grey">Closed at {pos.closedAt}</div>
-                  </div>
-                </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 lg:gap-8 text-right">
-                  <div><div className="text-[10px] font-bold text-mezo-grey uppercase mb-0.5">Deposited</div><div className="text-[13px] font-bold">{pos.deposited}</div></div>
-                  <div><div className="text-[10px] font-bold text-mezo-grey uppercase mb-0.5">Compound Gain</div><div className="text-[13px] font-extrabold text-strategy-conservative">{pos.compoundGain}</div></div>
-                  <div><div className="text-[10px] font-bold text-mezo-grey uppercase mb-0.5">Fees Paid</div><div className="text-[13px] font-bold">{pos.feesPaid}</div></div>
-                  <div><div className="text-[10px] font-bold text-mezo-grey uppercase mb-0.5">Effective APR</div><div className="text-[13px] font-extrabold">{pos.effectiveApr}%</div></div>
-                </div>
-              </div>
-            </div>
-          ))}
+          <div className="glass-card p-10 flex flex-col items-center justify-center text-center gap-3">
+            <XIcon className="w-8 h-8 text-mezo-grey/40" />
+            <p className="text-[15px] font-bold text-mezo-black">No completed positions</p>
+            <p className="text-[13px] text-mezo-grey max-w-xs">Positions will appear here once your lock expires and you withdraw your BTC.</p>
+          </div>
         </div>
       )}
 

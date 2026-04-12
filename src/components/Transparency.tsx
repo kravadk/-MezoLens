@@ -217,9 +217,14 @@ export function Transparency() {
               <p className="text-[13px] text-mezo-grey">Every auto-compound event for your positions</p>
             </div>
           </div>
-          <button className="text-[13px] font-bold text-mezo-sidebar flex items-center gap-1 hover:underline">
+          <a
+            href="https://explorer.test.mezo.org/address/0x961E1fc557c6A5Cf70070215190f9B57F719701D"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[13px] font-bold text-mezo-sidebar flex items-center gap-1 hover:underline"
+          >
             View on Explorer <ExternalLink className="w-4 h-4" />
-          </button>
+          </a>
         </div>
 
         {compoundHistory.length > 0 ? (

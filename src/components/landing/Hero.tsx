@@ -156,7 +156,7 @@ export default function Hero() {
                   color: 'transparent',
                 }}
               >
-                Auto-Compound
+                Bitcoin Banking,
               </motion.div>
             </motion.div>
             <br />
@@ -165,14 +165,14 @@ export default function Hero() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.62, ease: 'easeOut' }}
             >
-              Your Bitcoin.
+              Automated.
             </motion.div>
             <motion.div
               initial={{ y: 50, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.74, ease: 'easeOut' }}
             >
-              Effortlessly.
+              On Mezo.
             </motion.div>
           </h1>
 
@@ -183,7 +183,7 @@ export default function Hero() {
             transition={{ duration: 0.3, delay: 0.8 }}
             className="text-[16px] text-[#777] max-w-[440px] leading-[1.65] mb-8"
           >
-            Your Mezo Earn rewards are claimed, re-locked, and compounded every epoch. No manual claiming. No missed yield.
+            Deposit BTC. MezoLens borrows MUSD at 1%, deploys it to earn yield, and auto-compounds everything — every epoch, without you lifting a finger.
           </motion.p>
 
           {/* CTA Row */}

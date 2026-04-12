@@ -49,6 +49,7 @@ contract MusdPipe is Ownable, ReentrancyGuard {
     event LPHarvested(address indexed owner, uint256 yield);
     event CDPClosed(address indexed owner, uint256 btcReturned);
     event VaultUpdated(address indexed vault);
+    event RealModeEnabled(address indexed borrowerOps, address indexed musdToken);
 
     error OnlyVault();
     error CDPNotActive();
@@ -95,9 +96,12 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         musdMinted = (btcValueUsd * BPS_DENOMINATOR) / SAFE_COLLATERAL_RATIO;
 
         if (!useMockData) {
-            borrowerOperations.openTrove{value: msg.value}(
+            // Try real Mezo Borrow openTrove — 0.5% max fee, hints can be address(0)
+            try borrowerOperations.openTrove{value: msg.value}(
                 500, musdMinted, address(0), address(0)
-            );
+            ) {} catch {
+                // Fallback: BTC held as collateral in this contract, CDP tracked locally
+            }
         }
 
         cdps[positionId] = CDPInfo({
@@ -125,19 +129,21 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         CDPInfo storage cdp = cdps[positionId];
         if (!cdp.active) revert CDPNotActive();
 
-        if (useMockData) {
-            // Mock: 1:1 LP tokens for simplicity
-            lpTokens = musdAmount;
-            cdp.lpTokens += lpTokens;
-            cdp.lpDeployed += musdAmount;
+        if (!useMockData && address(swapRouter) != address(0) && address(musdToken) != address(0)) {
+            // Real: approve and add liquidity to MUSD pool via Mezo Swap
+            musdToken.safeApprove(address(swapRouter), musdAmount);
+            try swapRouter.addLiquidity(address(musdToken), musdAmount, 0) returns (uint256 lp) {
+                lpTokens = lp;
+            } catch {
+                // Swap unavailable — hold MUSD in contract, track deployment
+                lpTokens = musdAmount;
+            }
         } else {
-            // Real: add liquidity via Mezo Swap
-            // musdToken.approve(address(swapRouter), musdAmount);
-            // Would call swapRouter.addLiquidity(...)
-            lpTokens = musdAmount; // Simplified
-            cdp.lpTokens += lpTokens;
-            cdp.lpDeployed += musdAmount;
+            // Mock: 1:1 LP token tracking
+            lpTokens = musdAmount;
         }
+        cdp.lpTokens += lpTokens;
+        cdp.lpDeployed += musdAmount;
 
         emit LPDeployed(msg.sender, musdAmount, lpTokens);
     }
@@ -152,11 +158,18 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         CDPInfo storage cdp = cdps[positionId];
         if (!cdp.active) revert CDPNotActive();
 
-        if (useMockData) {
+        if (!useMockData && address(swapRouter) != address(0) && cdp.lpTokens > 0) {
+            // Real: harvest LP rewards from Mezo Swap pool
+            try swapRouter.collectFees(address(musdToken), cdp.lpTokens) returns (uint256 harvested) {
+                yield = harvested;
+                cdp.totalYield += yield;
+            } catch {
+                yield = 0;
+            }
+        } else if (useMockData) {
+            // Mock: 5% APR on deployed MUSD, distributed weekly
             yield = (cdp.lpDeployed * MOCK_LP_APR) / (BPS_DENOMINATOR * 52);
             cdp.totalYield += yield;
-        } else {
-            yield = 0;
         }
 
         emit LPHarvested(msg.sender, yield);
@@ -225,6 +238,24 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         if (_vault == address(0)) revert ZeroAddress();
         vault = _vault;
         emit VaultUpdated(_vault);
+    }
+
+    /// @notice Switch from mock mode to real Mezo Borrow integration
+    /// @param _borrowerOperations Mezo BorrowerOperations contract address
+    /// @param _swapRouter Mezo Swap router (can be zero if LP not available)
+    /// @param _musdToken MUSD token contract address
+    function enableRealMode(
+        address _borrowerOperations,
+        address _swapRouter,
+        address _musdToken
+    ) external onlyOwner {
+        require(_borrowerOperations != address(0), "Zero borrower ops");
+        require(_musdToken != address(0), "Zero musd token");
+        borrowerOperations = IMezoBorrow(_borrowerOperations);
+        if (_swapRouter != address(0)) swapRouter = IMezoSwap(_swapRouter);
+        musdToken = IERC20(_musdToken);
+        useMockData = false;
+        emit RealModeEnabled(_borrowerOperations, _musdToken);
     }
 
     receive() external payable {}

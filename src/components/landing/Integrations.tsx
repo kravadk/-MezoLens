@@ -16,8 +16,8 @@ export default function Integrations() {
     { icon: '💧', text: 'LP pools' },
     { icon: '🔑', text: 'Mezo Passport' },
     { icon: '📊', text: 'Pyth oracle' },
-    { icon: '🧪', text: 'Testnet deploy' },
-    { icon: '🔍', text: 'Explorer verify' },
+    { icon: '🏦', text: 'MUSD CDP' },
+    { icon: '🛡️', text: 'Stability Pool' },
   ];
 
   // Generate random initial positions once
