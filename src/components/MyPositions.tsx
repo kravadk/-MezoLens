@@ -20,6 +20,8 @@ import { useUIStore } from '../store/uiStore';
 import { useCompound } from '../hooks/useCompound';
 import { useEarnVault } from '../hooks/useEarnVault';
 import { usePositions } from '../hooks/usePositions';
+import { useEstimatedAPR } from '../hooks/useEstimatedAPR';
+import { useBtcPrice } from '../hooks/useBtcPrice';
 import { STRATEGIES } from '../utils/constants';
 import { TxStatusModal } from './modals/TxStatusModal';
 import { PillTabs } from './common/Pill';
@@ -50,6 +52,8 @@ export function MyPositions() {
   const { compound, getPendingCompound } = useCompound();
   const { claimWithoutCompound, changeStrategy, enableMusdYield, disableMusdYield } = useEarnVault();
   const posData = usePositions();
+  const aprs = useEstimatedAPR();
+  const btcPrice = useBtcPrice();
   const { showToast } = useUIStore();
 
   // Modal states
@@ -120,16 +124,20 @@ export function MyPositions() {
   };
 
   const boostMap: Record<string, string> = { Conservative: '1.0x', Balanced: '2.0x', Aggressive: '5.0x' };
-  const aprMap: Record<string, string> = { Conservative: '5.1%', Balanced: '8.2%', Aggressive: '12.4%' };
+  const aprMap: Record<string, string> = {
+    Conservative: `${aprs.conservative.toFixed(1)}%`,
+    Balanced: `${aprs.balanced.toFixed(1)}%`,
+    Aggressive: `${aprs.aggressive.toFixed(1)}%`,
+  };
 
   const activePositions = posData.positions.filter(p => p.active).map(p => ({
     id: p.id,
     strategy: p.strategy,
     balance: `${(p.btcDeposited + p.btcCompounded).toFixed(6)} BTC`,
     deposited: `${p.btcDeposited.toFixed(6)} BTC`,
-    value: `$${((p.btcDeposited + p.btcCompounded) * 96500).toFixed(0)}`,
+    value: `$${((p.btcDeposited + p.btcCompounded) * btcPrice).toFixed(0)}`,
     yield: `+${p.btcCompounded.toFixed(6)} BTC`,
-    apr: aprMap[p.strategy] || '5.1%',
+    apr: aprMap[p.strategy] || aprMap.Conservative,
     boost: boostMap[p.strategy] || '1.0x',
     compoundGains: `+${p.btcCompounded.toFixed(6)} BTC`,
     compoundCount: p.compoundCount,
@@ -158,23 +166,37 @@ export function MyPositions() {
   return (
     <div className="space-y-8">
       {/* Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
-        <div className="glass-card p-5 lg:p-6 border-l-4 border-mezo-sidebar">
-          <div className="text-[12px] font-bold text-mezo-grey uppercase tracking-widest mb-1">Total Position Value</div>
-          <div className="text-[28px] lg:text-[32px] font-extrabold text-mezo-black">0.813 BTC</div>
-          <div className="text-[13px] text-mezo-grey font-bold mt-1">= $78,460</div>
-        </div>
-        <div className="glass-card p-5 lg:p-6 border-l-4 border-strategy-conservative">
-          <div className="text-[12px] font-bold text-mezo-grey uppercase tracking-widest mb-1">Total Compound Gains</div>
-          <div className="text-[28px] lg:text-[32px] font-extrabold text-strategy-conservative">+0.058 BTC</div>
-          <div className="text-[13px] text-strategy-conservative font-bold mt-1">from 24 auto-compounds</div>
-        </div>
-        <div className="p-5 lg:p-6 bg-mezo-sidebar text-white border border-mezo-sidebar rounded-[16px]">
-          <div className="text-[12px] font-bold text-white/40 uppercase tracking-widest mb-1">Weighted APR</div>
-          <div className="text-[28px] lg:text-[32px] font-extrabold text-mezo-lime">9.42%</div>
-          <div className="text-[13px] text-white/60 font-bold mt-1">with compound effect</div>
-        </div>
-      </div>
+      {(() => {
+        const totalBtc = posData.totalValue;
+        const totalGains = posData.totalCompoundGains;
+        const totalUsd = (totalBtc * btcPrice).toFixed(0);
+        const activePos = posData.positions.filter(p => p.active);
+        const weightedApr = activePos.length > 0
+          ? activePos.reduce((sum, p) => {
+              const a = p.strategy === 'Aggressive' ? aprs.aggressive : p.strategy === 'Balanced' ? aprs.balanced : aprs.conservative;
+              return sum + a;
+            }, 0) / activePos.length
+          : 0;
+        return (
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 lg:gap-6">
+            <div className="glass-card p-5 lg:p-6 border-l-4 border-mezo-sidebar">
+              <div className="text-[12px] font-bold text-mezo-grey uppercase tracking-widest mb-1">Total Position Value</div>
+              <div className="text-[28px] lg:text-[32px] font-extrabold text-mezo-black">{totalBtc.toFixed(6)} BTC</div>
+              <div className="text-[13px] text-mezo-grey font-bold mt-1">≈ ${Number(totalUsd).toLocaleString()}</div>
+            </div>
+            <div className="glass-card p-5 lg:p-6 border-l-4 border-strategy-conservative">
+              <div className="text-[12px] font-bold text-mezo-grey uppercase tracking-widest mb-1">Total Compound Gains</div>
+              <div className="text-[28px] lg:text-[32px] font-extrabold text-strategy-conservative">+{totalGains.toFixed(6)} BTC</div>
+              <div className="text-[13px] text-strategy-conservative font-bold mt-1">auto-compounded on-chain</div>
+            </div>
+            <div className="p-5 lg:p-6 bg-mezo-sidebar text-white border border-mezo-sidebar rounded-[16px]">
+              <div className="text-[12px] font-bold text-white/40 uppercase tracking-widest mb-1">Weighted APR</div>
+              <div className="text-[28px] lg:text-[32px] font-extrabold text-mezo-lime">{weightedApr.toFixed(1)}%</div>
+              <div className="text-[13px] text-white/60 font-bold mt-1">with compound effect</div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Filter */}
       <PillTabs tabs={['all', 'active', 'completed']} activeTab={filter} onChange={setFilter} />

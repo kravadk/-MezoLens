@@ -2,19 +2,25 @@ import { motion } from 'framer-motion';
 import { Area, AreaChart, ResponsiveContainer, XAxis, YAxis, CartesianGrid } from 'recharts';
 import { useState } from 'react';
 
+// Illustrative example: 0.5 BTC deposit, 8% simple manual vs 18.4% compound APR
+const EXAMPLE_DEPOSIT = 0.5;
+const MANUAL_APR = 0.08;      // 8% annual, simple interest (manual claimer)
+const COMPOUND_APR = 0.184;   // 18.4% annual, weekly compounding (MezoLens)
+
+const chartData = Array.from({ length: 53 }, (_, i) => ({
+  week: i,
+  manual: EXAMPLE_DEPOSIT + EXAMPLE_DEPOSIT * MANUAL_APR * (i / 52),
+  compound: EXAMPLE_DEPOSIT * Math.pow(1 + COMPOUND_APR / 52, i),
+}));
+
+const manualFinal = chartData[52].manual;
+const compoundFinal = chartData[52].compound;
+const advantagePct = ((compoundFinal - manualFinal) / manualFinal * 100).toFixed(1);
+const advantageBtc = (compoundFinal - manualFinal).toFixed(3);
+
 export default function CompoundChart() {
   const [hasViewed, setHasViewed] = useState(false);
-
-  // Generate data for 52 weeks
-  const data = Array.from({ length: 53 }, (_, i) => {
-    const manual = 0.5 + (i / 52) * 0.04; // Linear growth
-    const compound = 0.5 * Math.pow(1 + 0.184 / 52, i); // Exponential growth
-    return {
-      week: i,
-      manual,
-      compound,
-    };
-  });
+  const data = chartData;
 
   return (
     <section className="py-14 bg-[#1A1A1A]">
@@ -63,7 +69,7 @@ export default function CompoundChart() {
                     dy={10}
                   />
                   <YAxis
-                    domain={[0.49, 0.65]}
+                    domain={[EXAMPLE_DEPOSIT * 0.98, compoundFinal * 1.02]}
                     tickFormatter={(val) => `₿ ${val.toFixed(2)}`}
                     axisLine={false}
                     tickLine={false}
@@ -115,7 +121,7 @@ export default function CompoundChart() {
               >
                 <div className="w-8 border-t border-dashed border-[#1A8C52]" />
                 <span className="text-[#1A8C52] text-[16px] font-[700] bg-[#E2F0E5] px-2 py-0.5 rounded-md">
-                  +18.4% more
+                  +{advantagePct}% more
                 </span>
               </motion.div>
             )}
@@ -125,17 +131,17 @@ export default function CompoundChart() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 pt-6 border-t border-mezo-black">
             <div>
               <p className="text-[#999] text-[13px] font-medium mb-1">Initial deposit</p>
-              <p className="text-[#1A1A1A] text-[16px] font-bold">₿ 0.50</p>
+              <p className="text-[#1A1A1A] text-[16px] font-bold">₿ {EXAMPLE_DEPOSIT.toFixed(2)}</p>
             </div>
             <div>
               <p className="text-[#999] text-[13px] font-medium mb-1">Manual claiming</p>
-              <p className="text-[#555] text-[14px] font-semibold">₿ 0.540 after 1 year</p>
+              <p className="text-[#555] text-[14px] font-semibold">₿ {manualFinal.toFixed(3)} after 1 year</p>
             </div>
             <div>
               <p className="text-[#999] text-[13px] font-medium mb-1">Auto-compound</p>
-              <p className="text-[#1A8C52] text-[14px] font-bold">₿ 0.600 after 1 year</p>
+              <p className="text-[#1A8C52] text-[14px] font-bold">₿ {compoundFinal.toFixed(3)} after 1 year</p>
               <p className="text-[#1A8C52] text-[22px] font-[700] mt-1">
-                Advantage: +₿ 0.060 (+18.4%)
+                Advantage: +₿ {advantageBtc} (+{advantagePct}%)
               </p>
             </div>
           </div>

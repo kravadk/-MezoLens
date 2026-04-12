@@ -18,31 +18,33 @@ import {
 import { cn } from '../lib/utils';
 import { useStore } from '../store';
 import { useCalculator } from '../hooks/useCalculator';
+import { useEstimatedAPR } from '../hooks/useEstimatedAPR';
 import { InfoCallout } from './common/InfoCallout';
 import { Tooltip } from './common/Tooltip';
 
 export function Calculator() {
-  const { btcAmount, setBtcAmount, months, setMonths, strategy, setStrategy, currentAprBps,
-    autoCompoundGains, manualGains, compoundAdvantage } = useCalculator();
+  const { btcAmount, setBtcAmount, months, setMonths, strategy, setStrategy } = useCalculator();
   const { setCurrentPage } = useStore();
+  const aprData = useEstimatedAPR();
 
   const aprs: Record<string, number> = {
-    conservative: 0.06,
-    balanced: 0.085,
-    aggressive: 0.124
+    conservative: aprData.conservative / 100,
+    balanced: aprData.balanced / 100,
+    aggressive: aprData.aggressive / 100,
   };
 
   const currentApr = aprs[strategy];
-  const manualApr = currentApr * 0.85;
+  // Manual claimers miss compounding — model as simple interest at same rate
+  const manualApr = currentApr;
 
   const generateData = () => {
     const data = [];
     for (let i = 0; i <= months; i++) {
-      const manualGains = btcAmount * (manualApr / 12) * i;
-      const compoundGains = btcAmount * Math.pow(1 + currentApr / 12, i) - btcAmount;
+      const manualVal = btcAmount * (manualApr / 12) * i;            // simple interest gains
+      const compoundGains = btcAmount * Math.pow(1 + currentApr / 12, i) - btcAmount; // compound gains
       data.push({
         month: `M${i}`,
-        manual: Number(manualGains.toFixed(6)),
+        manual: Number(manualVal.toFixed(6)),
         autoCompound: Number(compoundGains.toFixed(6)),
       });
     }
