@@ -7,7 +7,7 @@ import { wagmiConfig, mezoTestnet } from '../../lib/wagmi';
 import { MEZOLENS_CONTRACTS, EARN_VAULT_ABI } from '../../config/contracts';
 import { useStore } from '../../store';
 import { useWalletStore } from '../../store/walletStore';
-import { useUIStore } from '../../store/uiStore';
+import { useUIStore, markVisited } from '../../store/uiStore';
 
 export default function Hero() {
   const containerRef = useRef<HTMLDivElement>(null);
@@ -61,6 +61,7 @@ export default function Hero() {
   const particlesY = useTransform(scrollY, [0, 1000], [0, -300]);
 
   const handleLaunchApp = () => {
+    markVisited();
     if (isConnected) {
       setCurrentPage('Dashboard');
     } else {

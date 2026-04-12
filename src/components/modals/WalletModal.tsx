@@ -2,7 +2,7 @@ import React from 'react';
 import { Wallet, Eye, Loader2 } from 'lucide-react';
 import { ModalWrapper } from './ModalWrapper';
 import { useWalletStore } from '../../store/walletStore';
-import { useUIStore } from '../../store/uiStore';
+import { useUIStore, markVisited } from '../../store/uiStore';
 
 interface WalletModalProps {
   isOpen: boolean;
@@ -17,8 +17,10 @@ export function WalletModal({ isOpen, onClose }: WalletModalProps) {
     await connect();
     const { isConnected, error: err } = useWalletStore.getState();
     if (isConnected) {
+      markVisited();
       onClose();
       showToast('Wallet connected successfully', 'success');
+      useUIStore.getState().setCurrentPage('Dashboard');
     } else if (err) {
       showToast(err, 'error');
     }

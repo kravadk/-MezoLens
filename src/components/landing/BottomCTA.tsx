@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useStore } from '../../store';
 import { useWalletStore } from '../../store/walletStore';
-import { useUIStore } from '../../store/uiStore';
+import { useUIStore, markVisited } from '../../store/uiStore';
 
 export default function BottomCTA() {
   const { setCurrentPage } = useStore();
@@ -9,6 +9,7 @@ export default function BottomCTA() {
   const { openWalletModal } = useUIStore();
 
   const handleLaunchApp = () => {
+    markVisited();
     if (isConnected) {
       setCurrentPage('Dashboard');
     } else {

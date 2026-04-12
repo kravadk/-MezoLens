@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { getAccount, connect, disconnect, switchChain, getBalance, readContract } from 'wagmi/actions';
+import { clearVisited, useUIStore } from './uiStore';
 import { injected } from 'wagmi/connectors';
 import { wagmiConfig, mezoTestnet } from '../lib/wagmi';
 import { formatUnits } from 'viem';
@@ -80,6 +81,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
 
   disconnect: () => {
     disconnect(wagmiConfig);
+    clearVisited();
     set({
       isConnected: false,
       address: null,
@@ -89,6 +91,7 @@ export const useWalletStore = create<WalletState>((set, get) => ({
       connecting: false,
       error: null,
     });
+    useUIStore.getState().setCurrentPage('Landing');
   },
 
   refreshBalance: async () => {

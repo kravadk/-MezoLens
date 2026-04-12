@@ -14,8 +14,26 @@ interface UIState {
   hideToast: () => void;
 }
 
+const HAS_VISITED_KEY = 'mezolens_visited';
+
+function getInitialPage(): Page {
+  try {
+    return localStorage.getItem(HAS_VISITED_KEY) ? 'Dashboard' : 'Landing';
+  } catch {
+    return 'Landing';
+  }
+}
+
+export function markVisited() {
+  try { localStorage.setItem(HAS_VISITED_KEY, '1'); } catch {}
+}
+
+export function clearVisited() {
+  try { localStorage.removeItem(HAS_VISITED_KEY); } catch {}
+}
+
 export const useUIStore = create<UIState>((set) => ({
-  currentPage: 'Landing',
+  currentPage: getInitialPage(),
   setCurrentPage: (page) => set({ currentPage: page }),
   isWalletModalOpen: false,
   openWalletModal: () => set({ isWalletModalOpen: true }),
