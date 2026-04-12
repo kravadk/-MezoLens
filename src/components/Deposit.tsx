@@ -12,6 +12,8 @@ import { AmountInput } from './common/AmountInput';
 import { TxStatusModal } from './modals/TxStatusModal';
 import { STRATEGIES } from '../utils/constants';
 import { useEstimatedAPR } from '../hooks/useEstimatedAPR';
+import { usePassport } from '../hooks/usePassport';
+import { ShieldCheck, ShieldAlert } from 'lucide-react';
 
 const steps = ['Strategy', 'Amounts', 'Preview', 'Confirm'];
 
@@ -76,6 +78,7 @@ export function Deposit() {
   const { deposit } = useEarnVault();
   const balances = useTokenBalances();
   const aprs = useEstimatedAPR();
+  const passportStatus = usePassport();
 
   const nextStep = () => {
     // Validate before advancing
@@ -155,6 +158,23 @@ export function Deposit() {
 
   return (
     <div className="space-y-12">
+      {/* Passport banner */}
+      {passportStatus !== 'loading' && passportStatus !== 'verified' && (
+        <div className="flex items-center justify-between gap-3 p-4 bg-[#FFF4E5] rounded-2xl border border-[#D4940A]/20">
+          <div className="flex items-center gap-3">
+            <ShieldAlert className="w-6 h-6 text-[#D4940A] shrink-0" />
+            <div>
+              <span className="text-[14px] font-bold text-mezo-black">Mezo Passport recommended</span>
+              <span className="text-[12px] text-[#D4940A] ml-2">— required for full banking features</span>
+            </div>
+          </div>
+          <a href="https://mezo.org/passport" target="_blank" rel="noopener noreferrer"
+            className="shrink-0 px-4 py-2 bg-[#D4940A] text-white rounded-xl text-[12px] font-bold hover:opacity-90 flex items-center gap-1.5">
+            Get Passport <ShieldCheck className="w-3.5 h-3.5" />
+          </a>
+        </div>
+      )}
+
       {/* Stepper */}
       <div className="flex items-start max-w-[700px] mx-auto px-4">
         {steps.map((step, idx) => (

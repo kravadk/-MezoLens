@@ -9,6 +9,7 @@ import { Transparency } from './components/Transparency';
 import { MyPositions } from './components/MyPositions';
 import { VaultStats } from './components/VaultStats';
 import { Banking } from './components/Banking';
+import { OnboardingWizard } from './components/OnboardingWizard';
 import { LandingPage } from './components/landing/LandingPage';
 import { WalletModal } from './components/modals/WalletModal';
 import { Toast } from './components/common/Toast';
@@ -208,6 +209,7 @@ export default function App() {
       {/* Modals */}
       <WalletModal isOpen={isWalletModalOpen} onClose={closeWalletModal} />
       <Toast message={toastMessage || ''} type={toastType} isVisible={!!toastMessage} onClose={hideToast} />
+      {isConnected && <OnboardingWizard />}
     </div>
   );
 }

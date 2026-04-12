@@ -23,6 +23,9 @@ import { useCompound } from '../hooks/useCompound';
 import { useEpochData } from '../hooks/useEpochData';
 import { useUIStore } from '../store/uiStore';
 import { useDashboardData } from '../hooks/useDashboardData';
+import { usePassport } from '../hooks/usePassport';
+import { useMusdCdp } from '../hooks/useMusdCdp';
+import { ShieldCheck, ShieldAlert } from 'lucide-react';
 import {
   BarChart,
   Bar,
@@ -47,6 +50,8 @@ export function Dashboard() {
   const [txModal, setTxModal] = useState<{ open: boolean; status: 'pending' | 'success' | 'error'; hash?: string; title: string }>({ open: false, status: 'pending', title: '' });
 
   const { compound: doCompound } = useCompound();
+  const passportStatus = usePassport();
+  const cdp = useMusdCdp(0);
 
   const handleCompoundConfirm = async () => {
     setCompoundModalOpen(false);
@@ -85,6 +90,32 @@ export function Dashboard() {
 
   return (
     <div className="space-y-8">
+      {/* Passport + CDP health banner */}
+      <div className="flex flex-wrap gap-3">
+        {passportStatus !== 'loading' && (
+          passportStatus === 'verified' ? (
+            <div className="flex items-center gap-2 px-4 py-2 bg-strategy-conservative/10 rounded-full border border-strategy-conservative/20 text-[13px] font-bold text-strategy-conservative">
+              <ShieldCheck className="w-4 h-4" /> Passport Verified
+            </div>
+          ) : (
+            <a href="https://mezo.org/passport" target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 px-4 py-2 bg-[#FFF4E5] rounded-full border border-[#D4940A]/20 text-[13px] font-bold text-[#D4940A] hover:opacity-80 transition-opacity">
+              <ShieldAlert className="w-4 h-4" /> Get Mezo Passport →
+            </a>
+          )
+        )}
+        {cdp?.active && (
+          <div className={`flex items-center gap-2 px-4 py-2 rounded-full border text-[13px] font-bold ${
+            cdp.ratio < 160 ? 'bg-[#FF6B6B]/10 border-[#FF6B6B]/20 text-[#FF6B6B]'
+            : cdp.ratio < 180 ? 'bg-[#FFF4E5] border-[#D4940A]/20 text-[#D4940A]'
+            : 'bg-strategy-conservative/10 border-strategy-conservative/20 text-strategy-conservative'
+          }`}>
+            <div className={`w-2 h-2 rounded-full ${cdp.ratio < 160 ? 'bg-[#FF6B6B]' : cdp.ratio < 180 ? 'bg-[#D4940A]' : 'bg-strategy-conservative'} animate-pulse`} />
+            CDP {cdp.ratio.toFixed(0)}% {cdp.ratio < 160 ? '⚠️ At Risk' : cdp.ratio < 180 ? 'Caution' : 'Healthy'}
+          </div>
+        )}
+      </div>
+
       {/* Stats Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
         <StatCard

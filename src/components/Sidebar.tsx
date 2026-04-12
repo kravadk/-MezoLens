@@ -18,6 +18,7 @@ import { cn } from '../lib/utils';
 import { useCountdown } from '../hooks/useCountdown';
 import { useEpochData } from '../hooks/useEpochData';
 import { usePassport } from '../hooks/usePassport';
+import { useMusdCdp } from '../hooks/useMusdCdp';
 
 const navItems: { label: string; icon: React.ElementType; page: Page; badge?: string }[] = [
   { label: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
@@ -35,6 +36,7 @@ export function Sidebar() {
   const epochData = useEpochData();
   const epochTimer = useCountdown(epochData.endTime);
   const passportStatus = usePassport();
+  const cdp = useMusdCdp(0);
 
   return (
     <div className="w-[220px] bg-mezo-sidebar h-screen flex flex-col text-white fixed left-0 top-0 bottom-0 z-50 border-r border-mezo-black">
@@ -88,11 +90,21 @@ export function Sidebar() {
           </div>
           <div className="flex items-center justify-between">
             <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Epoch {epochData.number || 42}</span>
-            <span className="text-[11px] text-white font-mono">
-              {epochTimer.days > 0
-                ? `${epochTimer.days}d ${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}`
-                : `${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}:${String(epochTimer.seconds).padStart(2, '0')}`}
-            </span>
+            <div className="flex items-center gap-1.5">
+              {cdp?.active && (
+                <div className={`w-2 h-2 rounded-full flex-shrink-0 ${cdp.ratio < 160 ? 'bg-[#FF6B6B] animate-pulse' : cdp.ratio < 180 ? 'bg-[#FFD93D]' : 'bg-mezo-lime'}`} title={`CDP ${cdp.ratio.toFixed(0)}%`} />
+              )}
+              <span className="text-[11px] text-white font-mono">
+                {epochTimer.days > 0
+                  ? `${epochTimer.days}d ${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}`
+                  : `${String(epochTimer.hours).padStart(2, '0')}:${String(epochTimer.minutes).padStart(2, '0')}:${String(epochTimer.seconds).padStart(2, '0')}`}
+              </span>
+            </div>
+          </div>
+          <div className="text-[10px] text-white/30 font-medium mt-0.5">
+            {cdp?.active
+              ? `MUSD harvest + re-deploy in ${epochTimer.days > 0 ? `${epochTimer.days}d` : `${epochTimer.hours}h`}`
+              : 'Next compound cycle'}
           </div>
         </div>
 
