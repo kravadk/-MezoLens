@@ -6,7 +6,7 @@ import {
   Trophy,
   ExternalLink,
   Zap,
-  RefreshCw
+  RefreshCw,
 } from 'lucide-react';
 import { StatCard } from './StatCard';
 import { cn } from '../lib/utils';
@@ -172,6 +172,45 @@ export const VaultStats = () => {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* MUSD Banking Stats */}
+      <div className="glass-card p-8">
+        <div className="flex items-center gap-3 mb-6">
+          <div className="p-2 bg-[#E5E8FD] rounded-xl">
+            <Zap className="w-5 h-5 text-[#5B6DEC]" />
+          </div>
+          <div>
+            <h2 className="text-[18px] font-bold text-mezo-black">MUSD Banking — Protocol Stats</h2>
+            <p className="text-[13px] text-mezo-grey">MusdPipe on-chain · 1% fixed borrow rate</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: 'MUSD Capacity', value: `${Math.floor(vaultData.totalBtcInVault * 96500 / 1.8).toLocaleString()} MUSD`, sub: 'at current BTC price', color: '#5B6DEC' },
+            { label: 'Borrow Rate', value: '1% fixed', sub: 'no variable risk', color: '#1A8C52' },
+            { label: 'Min Collateral', value: '150%', sub: '180% recommended', color: '#D4940A' },
+            { label: 'LP APR Target', value: '5–15%', sub: 'Mezo Swap pools', color: '#1A8C52' },
+          ].map((s, i) => (
+            <div key={i} className="glass-card p-5">
+              <div className="text-[11px] font-bold text-mezo-grey uppercase tracking-widest mb-2">{s.label}</div>
+              <div className="text-[22px] font-extrabold" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[12px] text-mezo-grey mt-1">{s.sub}</div>
+            </div>
+          ))}
+        </div>
+        <div className="mt-6 flex flex-wrap gap-3">
+          <a href="https://explorer.test.mezo.org/address/0x82251096716EcE27260F2D4f67b2131B95D9bA33"
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-[12px] text-mezo-grey hover:text-mezo-black transition-colors border border-mezo-border rounded-lg px-3 py-2">
+            <ExternalLink className="w-3.5 h-3.5" /> MusdPipe Contract
+          </a>
+          <a href="https://explorer.test.mezo.org/address/0x961E1fc557c6A5Cf70070215190f9B57F719701D"
+            target="_blank" rel="noopener noreferrer"
+            className="flex items-center gap-1.5 text-[12px] text-mezo-grey hover:text-mezo-black transition-colors border border-mezo-border rounded-lg px-3 py-2">
+            <ExternalLink className="w-3.5 h-3.5" /> EarnVault Contract
+          </a>
         </div>
       </div>
 

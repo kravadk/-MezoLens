@@ -1,6 +1,6 @@
-# MezoLens — Auto-Compound BTC Yield Vault
+# MezoLens — Self-Service Bitcoin Banking on Mezo
 
-> **Yearn Finance for Bitcoin on Mezo.** Deposit BTC once. Your rewards are claimed, re-locked, and compounded every epoch — automatically.
+> **Deposit BTC. Borrow MUSD at 1% fixed. Earn LP yield. Auto-compound everything — every epoch, on-chain, no intermediaries.**
 
 [![Mezo Testnet](https://img.shields.io/badge/Network-Mezo%20Testnet-orange)](https://explorer.test.mezo.org)
 [![Chain ID](https://img.shields.io/badge/Chain%20ID-31611-blue)](https://explorer.test.mezo.org)
@@ -12,32 +12,32 @@
 
 ## The Problem
 
-Every Bitcoin holder on Mezo Earn faces the same friction: you lock BTC, earn rewards, then manually claim them, manually re-lock, manually adjust gauge votes each epoch. Miss a week? You left yield on the table. Miss a boost window? Your multiplier resets.
-
-Compounding is the most powerful force in yield — but only if it's actually happening, every single epoch, without fail.
+Bitcoin is the world's largest store of value — yet most BTC sits completely idle. Mezo unlocks Bitcoin DeFi, but using it optimally requires constant manual action: claim rewards, re-lock veBTC, adjust gauge votes, manage MUSD CDPs. Miss a week? You left yield on the table.
 
 ## The Solution
 
-**MezoLens** is a non-custodial yield vault that sits on top of Mezo Earn and handles everything for you:
+**MezoLens** is self-service Bitcoin banking infrastructure built on Mezo. The core flow:
 
-- **Auto-compound** — rewards are re-locked into your position each epoch
-- **Auto-boost** — MEZO is locked at the right duration to maintain your multiplier
-- **Auto-vote** — gauge votes are cast to whichever pool offers the best APR
-- **MUSD yield** — optionally route a portion of your compound into Mezo Borrow CDPs for additional stablecoin yield
+1. **Deposit BTC** → locked as veBTC collateral on Mezo
+2. **Borrow MUSD at 1% fixed** → MezoLens opens a CDP via Mezo Borrow
+3. **MUSD earns LP yield** → deployed to Mezo Swap liquidity pools
+4. **Auto-compound everything** → rewards + LP yield re-locked every epoch automatically
 
-One deposit. Three strategies. Perpetual compounding.
+**Mezo Passport** is integrated for on-chain identity verification, required for full banking access.
+
+One deposit. Three strategies. Perpetual compounding. No intermediaries.
 
 ---
 
 ## Strategies
 
-| Strategy | Boost | Lock Duration | MUSD Yield | Best For |
+| Strategy | Boost | MUSD at 1% | Auto-vote | Best For |
 |---|---|---|---|---|
-| **Conservative** | 1× | Standard | Optional | Passive holders, risk-averse |
-| **Balanced** | 2× | Extended + MEZO lock | Optional | Regular DeFi users |
-| **Aggressive** | 5× | Maximum + auto gauge voting | Optional | Yield maximizers |
+| **Conservative** | 1× | ✅ Core feature | ❌ | Passive holders, low risk |
+| **Balanced** | 2× | ✅ Core feature | ❌ | Regular DeFi users |
+| **Aggressive** | 5× | ✅ Core feature | ✅ | Yield maximizers |
 
-Each strategy can additionally route **0–50%** of compounded yield through Mezo Borrow to mint MUSD and deploy it into LP pools for extra stablecoin yield.
+All strategies borrow MUSD at **1% fixed rate** and deploy it to Mezo Swap LP pools. Net yield from LP fees exceeds the 1% borrow cost — making MUSD a positive-carry instrument in all strategies.
 
 Over 12 months at 9% base APR with weekly compounding, the Aggressive strategy earns **~18.4% more yield** than manual claiming.
 
@@ -228,8 +228,18 @@ forge test -v
 
 **Connect your wallet:**
 1. Add Mezo Testnet — Chain ID **31611**, RPC: `https://rpc.test.mezo.org`
-2. Get testnet BTC from the Mezo faucet
-3. Connect in MezoLens (Rabby or MetaMask), choose a strategy, deposit
+2. Get testnet BTC from the [Mezo faucet](https://faucet.test.mezo.org)
+3. Get your [Mezo Passport](https://mezo.org/passport) (required for banking features)
+4. Connect in MezoLens (Rabby or MetaMask), choose a strategy, deposit
+
+**Enable MUSD Banking:**
+After depositing, go to **Banking** tab → enable MUSD Yield → MezoLens automatically opens a CDP and deploys MUSD to LP pools.
+
+**Switch to real Mezo Borrow (production):**
+```solidity
+// Call on MusdPipe after Mezo Borrow launches on testnet:
+musdPipe.enableRealMode(borrowerOperationsAddress, swapRouterAddress, musdTokenAddress)
+```
 
 ---
 
@@ -269,4 +279,4 @@ With 12 Mezo protocol integrations, 4 live revenue streams, and a complete front
 
 ---
 
-*Deposit BTC once. Earn forever. Built for the Mezo Hackathon — MEZO Utilization track.*
+*Built for the Mezo Hackathon — MEZO Utilization track. Self-service Bitcoin banking: deposit BTC, borrow MUSD at 1%, earn yield, auto-compound everything.*

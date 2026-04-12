@@ -4,7 +4,7 @@ import {
   ShieldCheck, ShieldAlert, Shield, ExternalLink,
   Wallet, Heart, AlertTriangle, TrendingUp, ArrowRight,
   RefreshCw, Info, Send, ArrowLeftRight, Bitcoin, X,
-  Plus, Minus, CheckCircle, Loader,
+  Plus, Minus,
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useUIStore } from '../store/uiStore';
@@ -104,7 +104,7 @@ function AddCollateralModal({ open, onClose, onConfirm, loading }: {
               disabled={loading || !amount || parseFloat(amount) <= 0}
               className="w-full py-4 bg-mezo-lime text-mezo-sidebar rounded-2xl text-[14px] font-bold hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
             >
-              {loading ? <Loader className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
+              {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
               Add {amount || '0'} BTC
             </button>
           </motion.div>

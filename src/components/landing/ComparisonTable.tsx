@@ -3,12 +3,13 @@ import { Check, X } from 'lucide-react';
 
 export default function ComparisonTable() {
   const data = [
-    { label: 'Yield source', mezo: 'Protocol fees', aave: 'Lending', lido: 'Staking', hold: 'None' },
-    { label: 'APR', mezo: '5-15%', aave: '3-5%', lido: '3-4%', hold: '0%' },
+    { label: 'Yield source', mezo: 'MUSD LP + protocol fees', aave: 'Lending interest', lido: 'ETH staking', hold: 'None' },
+    { label: 'Borrow stablecoin', mezo: 'MUSD at 1% fixed', aave: 'Variable rate', lido: false, hold: false },
+    { label: 'APR', mezo: '5–15%', aave: '3–5%', lido: '3–4%', hold: '0%' },
     { label: 'Auto-compound', mezo: true, aave: false, lido: false, hold: null },
     { label: 'Asset', mezo: 'BTC', aave: 'ETH', lido: 'ETH', hold: 'BTC' },
-    { label: 'Lock', mezo: '4-16 weeks', aave: 'No', lido: 'No', hold: 'No' },
-    { label: 'Real yield', mezo: true, aave: true, lido: true, hold: null },
+    { label: 'On-chain identity', mezo: 'Mezo Passport', aave: null, lido: null, hold: null },
+    { label: 'Non-custodial', mezo: true, aave: true, lido: true, hold: true },
   ];
 
   const renderCell = (value: string | boolean | null, isMezo: boolean) => {
@@ -27,7 +28,8 @@ export default function ComparisonTable() {
           viewport={{ once: true }}
           className="mb-12"
         >
-          <h2 className="text-[26px] font-[700] text-[#1A1A1A]">How Mezo Earn compares</h2>
+          <h2 className="text-[26px] font-[700] text-[#1A1A1A] mb-2">How MezoLens compares</h2>
+          <p className="text-[15px] text-[#888]">The only vault that turns BTC into a MUSD banking engine.</p>
         </motion.div>
 
         <div className="bg-white rounded-[16px] shadow-[0_4px_24px_rgba(0,0,0,0.04)] border border-mezo-black overflow-hidden overflow-x-auto">

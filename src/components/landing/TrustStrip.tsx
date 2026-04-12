@@ -2,15 +2,17 @@ import { motion } from 'framer-motion';
 
 export default function TrustStrip() {
   const items = [
-    'Auto-compound',
+    'Mezo Passport integrated',
+    'Borrow MUSD at 1% fixed',
+    'Auto-compound every epoch',
     'veBTC lock',
     'veMEZO boost',
     'Gauge voting',
-    'MUSD yield',
+    'LP yield on MUSD',
     '0.3% transparent fee',
     'Permissionless keepers',
-    'Epoch-based yield',
     '12 Mezo integrations',
+    'Non-custodial',
     'Open source',
   ];
 
