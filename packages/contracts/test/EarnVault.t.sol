@@ -44,7 +44,6 @@ contract EarnVaultTest is Test {
         vm.deal(address(vault), 100 ether); // fund vault for rewards
     }
 
-    // ═══════ DEPOSIT TESTS ═══════
 
     function test_depositConservative() public {
         vm.prank(alice);
@@ -125,7 +124,6 @@ contract EarnVaultTest is Test {
         assertEq(posB.user, bob);
     }
 
-    // ═══════ WITHDRAW TESTS ═══════
 
     function test_withdrawAfterLockExpiry() public {
         vm.prank(alice);
@@ -186,7 +184,6 @@ contract EarnVaultTest is Test {
         vault.withdraw(0);
     }
 
-    // ═══════ STRATEGY CHANGE TESTS ═══════
 
     function test_changeStrategyConservativeToBalanced() public {
         vm.prank(alice);
@@ -248,7 +245,6 @@ contract EarnVaultTest is Test {
         assertEq(pos.boostMultiplier, 100);
     }
 
-    // ═══════ PAUSE TESTS ═══════
 
     function test_pauseBlocksDeposits() public {
         vault.pause();
@@ -273,7 +269,6 @@ contract EarnVaultTest is Test {
         vault.pause();
     }
 
-    // ═══════ READ FUNCTION TESTS ═══════
 
     function test_getVaultStats() public {
         vm.prank(alice);
@@ -311,7 +306,6 @@ contract EarnVaultTest is Test {
         assertEq(end, start + 7 days);
     }
 
-    // ═══════ FEE CALCULATIONS ═══════
 
     function test_feeCalculationsAccuracy() public {
         vm.prank(alice);
@@ -338,7 +332,6 @@ contract EarnVaultTest is Test {
         new FeeCollector(owner, 501, 10, 1000, 10); // > MAX_PERFORMANCE_BPS
     }
 
-    // ═══════ FUZZ TESTS ═══════
 
     function testFuzz_depositAmount(uint256 amount) public {
         amount = bound(amount, MIN_BTC, 50 ether);

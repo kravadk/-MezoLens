@@ -18,14 +18,12 @@ import {MusdPipe} from "./MusdPipe.sol";
 contract EarnVault is Ownable, Pausable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // --- Enums ---
     enum Strategy {
         CONSERVATIVE, // lock BTC → veBTC, earn base fees, auto-compound
         BALANCED,     // + lock MEZO → veMEZO, 2x boost, auto-compound
         AGGRESSIVE    // + max lock, 5x boost, auto gauge vote, auto-compound
     }
 
-    // --- Structs ---
     struct Position {
         address user;
         Strategy strategy;
@@ -69,7 +67,6 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         uint256 timestamp;
     }
 
-    // --- State ---
     FeeCollector public feeCollector;
     GaugeVoter public gaugeVoter;
     MusdPipe public musdPipe;
@@ -112,7 +109,6 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
     uint256 public constant COMPOUND_COOLDOWN = 1 hours;
     mapping(uint256 => uint256) public lastCompoundTimestamp;
 
-    // --- Events ---
     event Deposited(address indexed user, Strategy strategy, uint256 btcAmount, uint256 mezoAmount, uint256 positionId);
     event Withdrawn(address indexed user, uint256 positionId, uint256 btcReturned, uint256 mezoReturned, uint256 feesPaid);
     event Compounded(uint256 indexed positionId, uint256 amount, uint256 fee, uint256 callerIncentive, uint256 epoch);
@@ -123,7 +119,6 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
     event MusdYieldDisabled(uint256 indexed positionId);
     event EpochAdvanced(uint256 newEpoch, uint256 timestamp);
 
-    // --- Errors ---
     error BelowMinimumDeposit();
     error PositionNotActive();
     error NotPositionOwner();
@@ -156,9 +151,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         epochStartTime = block.timestamp;
     }
 
-    // ═══════════════════════════════════════════
     //  CORE USER FUNCTIONS
-    // ═══════════════════════════════════════════
 
     /// @notice Deposit BTC (and optionally MEZO) to open a new position
     /// @param strategy The yield strategy to use
@@ -333,9 +326,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         emit StrategyChanged(msg.sender, positionId, oldStrategy, newStrategy);
     }
 
-    // ═══════════════════════════════════════════
     //  AUTO-COMPOUND (CORE FEATURE)
-    // ═══════════════════════════════════════════
 
     /// @notice Auto-compound a position — PERMISSIONLESS, anyone can call
     /// @param positionId The position to compound
@@ -475,9 +466,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         emit CompoundBatch(positionIds, batchCompounded, batchFees);
     }
 
-    // ═══════════════════════════════════════════
     //  MUSD YIELD
-    // ═══════════════════════════════════════════
 
     /// @notice Enable MUSD yield routing for a position
     /// @param positionId The position to modify
@@ -511,9 +500,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         emit MusdYieldDisabled(positionId);
     }
 
-    // ═══════════════════════════════════════════
     //  READ FUNCTIONS
-    // ═══════════════════════════════════════════
 
     function getPosition(uint256 positionId) external view returns (Position memory) {
         return positions[positionId];
@@ -599,9 +586,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
         return musdPipe.getHealth(pos.user);
     }
 
-    // ═══════════════════════════════════════════
     //  ADMIN
-    // ═══════════════════════════════════════════
 
     function pause() external onlyOwner {
         _pause();
@@ -618,9 +603,7 @@ contract EarnVault is Ownable, Pausable, ReentrancyGuard {
     }
     event MockRewardRateUpdated(uint256 newRate);
 
-    // ═══════════════════════════════════════════
     //  INTERNAL
-    // ═══════════════════════════════════════════
 
     function _calculatePendingReward(uint256 positionId) internal view returns (uint256) {
         Position storage pos = positions[positionId];

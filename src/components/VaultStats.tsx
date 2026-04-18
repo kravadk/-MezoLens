@@ -11,6 +11,7 @@ import {
 import { StatCard } from './StatCard';
 import { cn } from '../lib/utils';
 import { useVaultStats } from '../hooks/useVaultStats';
+import { useBtcPrice } from '../hooks/useBtcPrice';
 import { Badge } from './common/Badge';
 import { SkeletonCard } from './common/Skeleton';
 import {
@@ -28,15 +29,14 @@ import {
 
 export const VaultStats = () => {
   const vaultData = useVaultStats();
+  const btcPrice = useBtcPrice();
 
   const distributionData = [
     { name: 'Aggressive', value: vaultData.strategyDistribution.aggressive, color: '#D4940A' },
     { name: 'Balanced', value: vaultData.strategyDistribution.balanced, color: '#5B6DEC' },
     { name: 'Conservative', value: vaultData.strategyDistribution.conservative, color: '#1A8C52' },
   ];
-  const epochPerformance = [
-    { epoch: '#1', totalCompounded: 0, apr: 0, positions: 0, revenue: 0 },
-  ];
+  const epochPerformance: { epoch: string; apr: number }[] = [];
   const keepers = vaultData.keepers;
   return (
     <div className="space-y-8">
@@ -45,17 +45,13 @@ export const VaultStats = () => {
         <StatCard
           label="Total BTC in Vault"
           value={`${vaultData.totalBtcInVault} BTC`}
-          trend={12.4}
           subtitle="Across all users"
-          progress={80}
           icon={<Globe className="w-4 h-4 text-mezo-grey" />}
         />
         <StatCard
           label="Total Auto-Compounded"
           value={`${vaultData.totalAutoCompounded} BTC`}
-          trend={15.2}
           subtitle="All BTC ever re-locked"
-          progress={65}
           isAccent
           icon={<Zap className="w-4 h-4 text-mezo-sidebar" />}
         />
@@ -63,15 +59,12 @@ export const VaultStats = () => {
           label="Active Positions"
           value={String(vaultData.totalPositions)}
           subtitle="Across all strategies"
-          progress={100}
           icon={<Activity className="w-4 h-4 text-mezo-grey" />}
         />
         <StatCard
           label="Protocol Revenue"
           value={`${vaultData.protocolRevenue} BTC`}
-          trend={8.4}
           subtitle="All fees collected"
-          progress={45}
           icon={<Shield className="w-4 h-4 text-mezo-grey" />}
         />
       </div>
@@ -188,9 +181,9 @@ export const VaultStats = () => {
         </div>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {[
-            { label: 'MUSD Capacity', value: `${Math.floor(vaultData.totalBtcInVault * 96500 / 1.8).toLocaleString()} MUSD`, sub: 'at current BTC price', color: '#5B6DEC' },
+            { label: 'MUSD Capacity', value: btcPrice > 0 ? `${Math.floor(vaultData.totalBtcInVault * btcPrice / 1.8).toLocaleString()} MUSD` : '— MUSD', sub: 'at current BTC price', color: '#5B6DEC' },
             { label: 'Borrow Rate', value: '1% fixed', sub: 'no variable risk', color: '#1A8C52' },
-            { label: 'Min Collateral', value: '150%', sub: '180% recommended', color: '#D4940A' },
+            { label: 'Min Collateral', value: '110% MCR', sub: '150% recommended', color: '#D4940A' },
             { label: 'LP APR Target', value: '5–15%', sub: 'Mezo Swap pools', color: '#1A8C52' },
           ].map((s, i) => (
             <div key={i} className="glass-card p-5">
@@ -201,10 +194,10 @@ export const VaultStats = () => {
           ))}
         </div>
         <div className="mt-6 flex flex-wrap gap-3">
-          <a href="https://explorer.test.mezo.org/address/0x82251096716EcE27260F2D4f67b2131B95D9bA33"
+          <a href="https://explorer.test.mezo.org/address/0xCdF7028ceAB81fA0C6971208e83fa7872994beE5"
             target="_blank" rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-[12px] text-mezo-grey hover:text-mezo-black transition-colors border border-mezo-border rounded-lg px-3 py-2">
-            <ExternalLink className="w-3.5 h-3.5" /> MusdPipe Contract
+            <ExternalLink className="w-3.5 h-3.5" /> BorrowerOperations Contract
           </a>
           <a href="https://explorer.test.mezo.org/address/0x961E1fc557c6A5Cf70070215190f9B57F719701D"
             target="_blank" rel="noopener noreferrer"

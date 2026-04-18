@@ -8,13 +8,11 @@ import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol
 /// @notice Tracks performance fees, management fees, and MUSD spread separately
 /// @dev All fees denominated in native BTC (wei)
 contract FeeCollector is Ownable, ReentrancyGuard {
-    // --- Fee parameters (basis points) ---
     uint256 public performanceFeeBps; // 0.3% = 30 bps
     uint256 public managementFeeBps;  // 0.1% = 10 bps
     uint256 public musdSpreadBps;     // 10% = 1000 bps
     uint256 public keeperIncentiveBps; // 0.1% = 10 bps
 
-    // --- Fee caps ---
     uint256 public constant MAX_PERFORMANCE_BPS = 500;  // 5%
     uint256 public constant MAX_MANAGEMENT_BPS = 100;    // 1%
     uint256 public constant MAX_MUSD_SPREAD_BPS = 2000;  // 20%
@@ -22,28 +20,23 @@ contract FeeCollector is Ownable, ReentrancyGuard {
     uint256 public constant BPS_DENOMINATOR = 10_000;
     uint256 public constant SECONDS_PER_YEAR = 365 days;
 
-    // --- Accumulated fees ---
     uint256 public totalPerformanceFees;
     uint256 public totalManagementFees;
     uint256 public totalMusdSpreadFees;
     uint256 public totalKeeperPaid;
 
-    // --- Per-epoch tracking ---
     uint256 public currentEpochStart;
     uint256 public epochPerformanceFees;
     uint256 public epochManagementFees;
     uint256 public epochMusdSpreadFees;
 
-    // --- Access control ---
     address public vault;
 
-    // --- Withdrawal timelock ---
     uint256 public constant WITHDRAWAL_DELAY = 2 days;
     uint256 public pendingWithdrawalAmount;
     address public pendingWithdrawalTo;
     uint256 public withdrawalUnlockTime;
 
-    // --- Events ---
     event PerformanceFeeCollected(uint256 amount, uint256 totalCollected);
     event ManagementFeeCollected(uint256 amount, uint256 totalCollected);
     event MusdSpreadCollected(uint256 amount, uint256 totalCollected);
@@ -85,7 +78,6 @@ contract FeeCollector is Ownable, ReentrancyGuard {
         currentEpochStart = block.timestamp;
     }
 
-    // --- Fee collection (called by EarnVault) ---
 
     /// @notice Collect performance fee from compound yield
     /// @param amount The compound yield amount (before fee)
@@ -133,7 +125,6 @@ contract FeeCollector is Ownable, ReentrancyGuard {
         emit KeeperPaid(keeper, amount);
     }
 
-    // --- Read functions ---
 
     /// @notice Get total fees collected across all categories
     function getTotalCollected()
@@ -168,7 +159,6 @@ contract FeeCollector is Ownable, ReentrancyGuard {
         emit EpochReset(block.timestamp);
     }
 
-    // --- Admin ---
 
     /// @notice Update fee parameters
     function setFees(uint256 _performanceBps, uint256 _managementBps, uint256 _musdSpreadBps) external onlyOwner {

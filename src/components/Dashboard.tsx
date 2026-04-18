@@ -15,7 +15,6 @@ import { StatCard } from './StatCard';
 import { CompoundTriggerModal } from './modals/CompoundTriggerModal';
 import { Badge } from './common/Badge';
 import { Button } from './common/Button';
-import { CountUp } from './common/CountUp';
 import { ProgressBar } from './common/ProgressBar';
 import { useStore } from '../store';
 import { useEarnVault } from '../hooks/useEarnVault';
@@ -121,17 +120,13 @@ export function Dashboard() {
         <StatCard
           label="Your Total BTC"
           value={`${dashData.totalBtc.toFixed(3)} BTC`}
-          trend={2.4}
           subtitle="Deposited + compounded"
-          progress={65}
           icon={<Bitcoin className="w-4 h-4 text-mezo-grey" />}
         />
         <StatCard
           label="Compound Gains"
           value={`+${dashData.compoundGains.toFixed(3)} BTC`}
-          trend={18.7}
           subtitle="Extra BTC from auto-compound"
-          progress={85}
           isAccent
           icon={<Zap className="w-4 h-4 text-mezo-sidebar" />}
         />
@@ -139,20 +134,18 @@ export function Dashboard() {
           label="Pending Compound"
           value={`${getPendingCompound(0).toFixed(4)} BTC`}
           subtitle={`Next in ${epoch.timeRemaining.days}d ${epoch.timeRemaining.hours}h`}
-          progress={30}
+          progress={Math.round(epoch.progress)}
           icon={<Clock className="w-4 h-4 text-mezo-grey" />}
         />
         <StatCard
           label="Your APR (Compounded)"
           value={`${dashData.apr}%`}
-          trend={1.2}
-          subtitle={`Base APR: ${dashData.baseApr}%`}
-          progress={92}
+          subtitle="Estimated from on-chain data"
           icon={<Percent className="w-4 h-4 text-mezo-grey" />}
         />
       </div>
 
-      {/* Compound Advantage Card */}
+      {/* Compound Gains Card */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
@@ -164,22 +157,18 @@ export function Dashboard() {
               <Zap className="w-7 h-7 text-mezo-lime" />
             </div>
             <div>
-              <h3 className="text-[18px] lg:text-[20px] font-extrabold text-white">Compound Advantage</h3>
-              <p className="text-[13px] text-white/90">Why MezoLens is worth it</p>
+              <h3 className="text-[18px] lg:text-[20px] font-extrabold text-white">Auto-Compound Earnings</h3>
+              <p className="text-[13px] text-white/90">BTC re-locked on your behalf</p>
             </div>
           </div>
           <div className="flex items-center gap-6 lg:gap-12 flex-wrap">
             <div className="text-right">
-              <div className="text-[12px] uppercase tracking-wider text-white/80 font-bold">Without MezoLens</div>
-              <div className="text-[20px] lg:text-[24px] font-extrabold text-white/80">{dashData.manualGains?.toFixed(6) || '0'} BTC</div>
-            </div>
-            <div className="text-right">
-              <div className="text-[12px] uppercase tracking-wider text-mezo-lime/60 font-bold">With MezoLens</div>
+              <div className="text-[12px] uppercase tracking-wider text-mezo-lime/60 font-bold">Total Compounded</div>
               <div className="text-[20px] lg:text-[24px] font-extrabold text-mezo-lime">{dashData.compoundGains?.toFixed(6) || '0'} BTC</div>
             </div>
             <div className="text-right pl-6 border-l border-white/10">
-              <div className="text-[12px] uppercase tracking-wider text-white/80 font-bold">Advantage</div>
-              <div className="text-[24px] lg:text-[28px] font-extrabold text-mezo-lime">+<CountUp end={dashData.advantagePercent || 0} decimals={1} />%</div>
+              <div className="text-[12px] uppercase tracking-wider text-white/80 font-bold">Your APR</div>
+              <div className="text-[24px] lg:text-[28px] font-extrabold text-mezo-lime">{dashData.apr}%</div>
             </div>
           </div>
         </div>

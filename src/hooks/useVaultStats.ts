@@ -40,18 +40,13 @@ export function useVaultStats(): VaultStatsData {
           chainId: mezoTestnet.id,
         }) as any;
 
-        const totalPos = Number(result.totalPositions);
         setData({
           totalBtcInVault: parseFloat(formatUnits(result.totalBtcLocked, 18)),
           totalAutoCompounded: parseFloat(formatUnits(result.totalCompounded, 18)),
-          totalPositions: totalPos,
+          totalPositions: Number(result.totalPositions),
           protocolRevenue: parseFloat(formatUnits(result.totalFeesCollected, 18)),
           keepers: [],
-          strategyDistribution: {
-            conservative: Math.round(totalPos * 0.2),
-            balanced: Math.round(totalPos * 0.45),
-            aggressive: totalPos - Math.round(totalPos * 0.2) - Math.round(totalPos * 0.45),
-          },
+          strategyDistribution: { conservative: 0, balanced: 0, aggressive: 0 },
         });
       } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('RPC call failed:', e); }
     };

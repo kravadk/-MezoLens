@@ -15,7 +15,7 @@ export default function Hero() {
   const { setCurrentPage } = useStore();
   const { isConnected } = useWalletStore();
   const { openWalletModal } = useUIStore();
-  const [heroStats, setHeroStats] = useState({ btcLocked: 0, positions: 0 });
+  const [heroStats, setHeroStats] = useState({ btcLocked: 0, positions: 0, avgApr: 8.5 });
 
   useEffect(() => {
     const load = async () => {
@@ -26,9 +26,19 @@ export default function Hero() {
           functionName: 'getVaultStats',
           chainId: mezoTestnet.id,
         }) as any;
+        const [aprCons, aprBal, aprAgg] = await Promise.all([
+          readContract(wagmiConfig, { address: MEZOLENS_CONTRACTS.earnVault, abi: EARN_VAULT_ABI, functionName: 'getEstimatedAPR', args: [0], chainId: mezoTestnet.id }) as Promise<bigint>,
+          readContract(wagmiConfig, { address: MEZOLENS_CONTRACTS.earnVault, abi: EARN_VAULT_ABI, functionName: 'getEstimatedAPR', args: [1], chainId: mezoTestnet.id }) as Promise<bigint>,
+          readContract(wagmiConfig, { address: MEZOLENS_CONTRACTS.earnVault, abi: EARN_VAULT_ABI, functionName: 'getEstimatedAPR', args: [2], chainId: mezoTestnet.id }) as Promise<bigint>,
+        ]).catch(() => [null, null, null]);
+        // Contract returns bps*100 (same format as useEstimatedAPR): divide by 10000
+        const avgApr = (aprCons && aprBal && aprAgg)
+          ? parseFloat(((Number(aprCons) + Number(aprBal) + Number(aprAgg)) / 3 / 10000).toFixed(1))
+          : 8.5;
         setHeroStats({
           btcLocked: parseFloat(parseFloat(formatUnits(result.totalBtcLocked, 18)).toFixed(6)),
           positions: Number(result.totalPositions),
+          avgApr,
         });
       } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('RPC:', e); }
     };
@@ -142,7 +152,7 @@ export default function Hero() {
               transition={{ duration: 0.4, delay: 0.5, ease: 'easeOut' }}
               className="relative inline-block"
             >
-              <span className="relative z-10">Auto-Compound</span>
+              <span className="relative z-10">Self-Service</span>
               {/* Shimmer effect */}
               <motion.div
                 className="absolute inset-0 z-20 pointer-events-none"
@@ -156,7 +166,7 @@ export default function Hero() {
                   color: 'transparent',
                 }}
               >
-                Bitcoin Banking,
+                Bitcoin Banking
               </motion.div>
             </motion.div>
             <br />
@@ -165,14 +175,7 @@ export default function Hero() {
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 0.4, delay: 0.62, ease: 'easeOut' }}
             >
-              Automated.
-            </motion.div>
-            <motion.div
-              initial={{ y: 50, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 0.4, delay: 0.74, ease: 'easeOut' }}
-            >
-              On Mezo.
+              on Mezo.
             </motion.div>
           </h1>
 
@@ -181,9 +184,9 @@ export default function Hero() {
             initial={{ y: 20, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.3, delay: 0.8 }}
-            className="text-[16px] text-[#777] max-w-[440px] leading-[1.65] mb-8"
+            className="text-[16px] text-[#777] max-w-[460px] leading-[1.65] mb-8"
           >
-            Deposit BTC. MezoLens borrows MUSD at 1%, deploys it to earn yield, and auto-compounds everything — every epoch, without you lifting a finger.
+            Deposit BTC as collateral. Borrow MUSD at 1% fixed. Earn LP yield that covers the cost. Auto-compound everything — your Bitcoin, fully productive, fully yours.
           </motion.p>
 
           {/* CTA Row */}
@@ -218,7 +221,7 @@ export default function Hero() {
             {[
               { label: 'BTC locked', prefix: '₿ ', end: heroStats.btcLocked, decimals: 6 },
               { label: 'positions', prefix: '', end: heroStats.positions, decimals: 0 },
-              { label: 'avg APR', prefix: '~', end: 9.2, suffix: '%', decimals: 1 },
+              { label: 'avg APR', prefix: '~', end: heroStats.avgApr, suffix: '%', decimals: 1 },
             ].map((stat, i) => (
               <motion.div
                 key={i}
@@ -380,9 +383,9 @@ export default function Hero() {
               <div className="mt-auto z-20">
                 <div className="flex items-end justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <span className="text-[28px] font-[800] text-[#1A1A1A] leading-none">0.5432 BTC</span>
+                    <span className="text-[28px] font-[800] text-[#1A1A1A] leading-none">{heroStats.btcLocked.toFixed(4)} BTC</span>
                     <span className="bg-[#E2F0E5] text-[#1A8C52] text-[11px] font-bold px-1.5 py-0.5 rounded-sm mb-1">
-                      +0.038
+                      Live
                     </span>
                   </div>
                   {/* Sparkline */}
@@ -416,7 +419,7 @@ export default function Hero() {
                 {/* Progress Bar */}
                 <div className="flex items-center gap-3">
                   <div className="flex-1 h-[5px] rounded-full bg-gradient-to-r from-[#FF6B6B] via-[#FFD93D] to-[#4CAF50]" />
-                  <span className="text-[11px] text-[#AAA] font-medium">78% to next epoch</span>
+                  <span className="text-[11px] text-[#AAA] font-medium">{heroStats.positions} active positions</span>
                 </div>
               </div>
             </motion.div>

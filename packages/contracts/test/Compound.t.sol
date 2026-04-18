@@ -44,7 +44,6 @@ contract CompoundTest is Test {
         vault.deposit{value: 0.001 ether}(EarnVault.Strategy.CONSERVATIVE, 0);
     }
 
-    // ═══════ COMPOUND SINGLE POSITION ═══════
 
     function test_compoundConservative() public {
         _depositAndAdvanceEpoch(alice, EarnVault.Strategy.CONSERVATIVE);
@@ -79,7 +78,6 @@ contract CompoundTest is Test {
         assertTrue(pos.btcCompounded > 0);
     }
 
-    // ═══════ COMPOUND RESTRICTIONS ═══════
 
     function test_compoundBeforeNewEpochReverts() public {
         vm.prank(alice);
@@ -101,7 +99,6 @@ contract CompoundTest is Test {
         assertTrue(pos.btcCompounded > 0);
     }
 
-    // ═══════ COMPOUND FEE DEDUCTION ═══════
 
     function test_compoundFeeDeductionAccuracy() public {
         _depositAndAdvanceEpoch(alice, EarnVault.Strategy.CONSERVATIVE);
@@ -175,7 +172,6 @@ contract CompoundTest is Test {
         assertEq(pos.btcCompounded, expectedCompound);
     }
 
-    // ═══════ COMPOUND BATCH ═══════
 
     function test_compoundBatchMultiplePositions() public {
         vm.prank(alice);
@@ -223,7 +219,6 @@ contract CompoundTest is Test {
         assertEq(vault.getPosition(0).btcCompounded, compoundedAfterFirst);
     }
 
-    // ═══════ KEEPER INCENTIVE ═══════
 
     function test_keeperIncentiveCalculation() public {
         uint256 incentive = feeCollector.calculateKeeperIncentive(1 ether);
@@ -240,7 +235,6 @@ contract CompoundTest is Test {
         assertTrue(keeper.balance > keeperBalBefore, "Keeper should receive incentive");
     }
 
-    // ═══════ COMPOUND HISTORY ═══════
 
     function test_compoundHistoryRecorded() public {
         _depositAndAdvanceEpoch(alice, EarnVault.Strategy.CONSERVATIVE);
@@ -254,7 +248,6 @@ contract CompoundTest is Test {
         assertTrue(history[0].fee > 0);
     }
 
-    // ═══════ COMPOUND FUZZ ═══════
 
     function testFuzz_compoundAmounts(uint256 depositAmount) public {
         depositAmount = bound(depositAmount, 0.001 ether, 50 ether);

@@ -5,10 +5,12 @@ import { readContract } from 'wagmi/actions';
 import { formatUnits } from 'viem';
 import { wagmiConfig, mezoTestnet } from '../../lib/wagmi';
 import { MEZOLENS_CONTRACTS, EARN_VAULT_ABI } from '../../config/contracts';
+import { useBtcPrice } from '../../hooks/useBtcPrice';
 
 export default function LiveMetrics() {
   const [hasViewed, setHasViewed] = useState(false);
   const [stats, setStats] = useState({ totalBtc: 0, compounded: 0, positions: 0, musdCapacity: 0 });
+  const btcPrice = useBtcPrice();
 
   useEffect(() => {
     const load = async () => {
@@ -21,20 +23,21 @@ export default function LiveMetrics() {
         }) as any;
 
         const btcLocked = parseFloat(parseFloat(formatUnits(result.totalBtcLocked, 18)).toFixed(6));
-        // MUSD capacity: BTC value / 1.8 collateral ratio (at $96,500/BTC)
-        const musdCap = Math.floor(btcLocked * 96500 / 1.8);
-        setStats({
+        setStats(prev => ({
           totalBtc: btcLocked,
           compounded: parseFloat(parseFloat(formatUnits(result.totalCompounded, 18)).toFixed(6)),
           positions: Number(result.totalPositions),
-          musdCapacity: musdCap,
-        });
+          musdCapacity: btcPrice > 0 ? Math.floor(btcLocked * btcPrice / 1.8) : prev.musdCapacity,
+        }));
       } catch (e) { if (process.env.NODE_ENV === 'development') console.warn('RPC:', e); }
     };
     load();
     const interval = setInterval(load, 30000);
     return () => clearInterval(interval);
-  }, []);
+  }, [btcPrice]);
+
+  // compound ratio: auto-compounded / total locked (0–100)
+  const compoundRatio = stats.totalBtc > 0 ? Math.min((stats.compounded / stats.totalBtc) * 100, 100) : 0;
 
   const metrics = [
     {
@@ -44,7 +47,7 @@ export default function LiveMetrics() {
       decimals: 6,
       trend: 'Live',
       subtitle: 'across all vaults',
-      progress: 78,
+      progress: null,
     },
     {
       label: 'Auto-Compounded',
@@ -53,7 +56,7 @@ export default function LiveMetrics() {
       decimals: 6,
       trend: 'Live',
       subtitle: 're-locked automatically',
-      progress: 65,
+      progress: parseFloat(compoundRatio.toFixed(1)),
     },
     {
       label: 'Active Positions',
@@ -61,7 +64,7 @@ export default function LiveMetrics() {
       value: stats.positions,
       trend: 'Live',
       subtitle: 'earning compound yield',
-      progress: 82,
+      progress: null,
     },
     {
       label: 'MUSD Capacity',
@@ -71,7 +74,7 @@ export default function LiveMetrics() {
       trend: '1% rate',
       trendColor: 'blue',
       subtitle: 'borrowable at 1% fixed',
-      progress: 71,
+      progress: null,
     },
   ];
 
@@ -136,19 +139,21 @@ export default function LiveMetrics() {
 
               <p className="text-[12px] text-[#BBB] mb-6">{metric.subtitle}</p>
 
-              <div className="flex items-center gap-3">
-                <div className="flex-1 h-[5px] rounded-full bg-[#F0F0F0] overflow-hidden">
-                  <motion.div
-                    initial={{ width: 0 }}
-                    animate={hasViewed ? { width: `${metric.progress}%` } : { width: 0 }}
-                    transition={{ duration: 0.8, ease: 'easeOut', delay: 1.5 + i * 0.1 }}
-                    className="h-full bg-gradient-to-r from-[#FF6B6B] via-[#FFD93D] to-[#4CAF50]"
-                  />
+              {metric.progress !== null && (
+                <div className="flex items-center gap-3">
+                  <div className="flex-1 h-[5px] rounded-full bg-[#F0F0F0] overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={hasViewed ? { width: `${metric.progress}%` } : { width: 0 }}
+                      transition={{ duration: 0.8, ease: 'easeOut', delay: 1.5 + i * 0.1 }}
+                      className="h-full bg-gradient-to-r from-[#FF6B6B] via-[#FFD93D] to-[#4CAF50]"
+                    />
+                  </div>
+                  <span className="text-[12px] text-[#AAA] font-medium w-8 text-right">
+                    {metric.progress}%
+                  </span>
                 </div>
-                <span className="text-[12px] text-[#AAA] font-medium w-8 text-right">
-                  {metric.progress}%
-                </span>
-              </div>
+              )}
             </motion.div>
           ))}
         </div>

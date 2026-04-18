@@ -14,12 +14,10 @@ import {IMezoSwap} from "./interfaces/IMezoSwap.sol";
 contract MusdPipe is Ownable, ReentrancyGuard {
     using SafeERC20 for IERC20;
 
-    // --- External contracts ---
     IMezoBorrow public borrowerOperations;
     IMezoSwap public swapRouter;
     IERC20 public musdToken;
 
-    // --- Mock state (fallback) ---
     bool public useMockData;
 
     struct CDPInfo {
@@ -33,17 +31,14 @@ contract MusdPipe is Ownable, ReentrancyGuard {
 
     mapping(uint256 => CDPInfo) public cdps; // positionId => CDP
 
-    // --- Constants ---
     uint256 public constant MIN_COLLATERAL_RATIO = 15000; // 150% in basis points
     uint256 public constant SAFE_COLLATERAL_RATIO = 18000; // 180% target
     uint256 public constant BPS_DENOMINATOR = 10_000;
     uint256 public constant MOCK_BTC_PRICE = 96_500e18; // Mock BTC/USD price
     uint256 public constant MOCK_LP_APR = 500; // 5% mock LP APR
 
-    // --- Access control ---
     address public vault;
 
-    // --- Events ---
     event CDPOpened(address indexed owner, uint256 btcCollateral, uint256 musdMinted);
     event LPDeployed(address indexed owner, uint256 musdAmount, uint256 lpTokens);
     event LPHarvested(address indexed owner, uint256 yield);
@@ -80,7 +75,6 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         }
     }
 
-    // --- Core pipeline functions ---
 
     /// @notice Open a CDP: deposit BTC as collateral, mint MUSD
     /// @return musdMinted Amount of MUSD minted
@@ -203,7 +197,6 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         emit CDPClosed(msg.sender, btcReturned);
     }
 
-    // --- Health monitoring ---
 
     /// @notice Get CDP health (legacy, uses position 0)
     /// @return ratio Collateral ratio in basis points
@@ -232,7 +225,6 @@ contract MusdPipe is Ownable, ReentrancyGuard {
         return cdps[positionId];
     }
 
-    // --- Admin ---
 
     function setVault(address _vault) external onlyOwner {
         if (_vault == address(0)) revert ZeroAddress();

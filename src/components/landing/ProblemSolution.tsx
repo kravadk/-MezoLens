@@ -38,9 +38,9 @@ export default function ProblemSolution() {
           viewport={{ once: true }}
           className="text-center mb-14"
         >
-          <h2 className="text-[32px] font-[800] text-white mb-3">Bitcoin should work for you.</h2>
+          <h2 className="text-[32px] font-[800] text-white mb-3">Bitcoin as productive capital.</h2>
           <p className="text-[16px] text-white/70">
-            Most BTC sits idle. MezoLens puts it to work — borrow MUSD at <span className="text-[#C8F0A0] font-bold">1% fixed rate</span>, earn yield automatically, compound everything back into BTC.
+            Most BTC sits idle. MezoLens turns it into a self-service bank — borrow MUSD at <span className="text-[#C8F0A0] font-bold">1% fixed rate</span>, earn LP yield that covers the cost, compound everything back into BTC. No intermediaries.
           </p>
         </motion.div>
 

@@ -10,7 +10,7 @@ export function useDashboardData() {
   const aprs = useEstimatedAPR();
 
   if (!isConnected || rawPositions.length === 0) {
-    return { positions: [], totalBtc: 0, compoundGains: 0, performanceData: [], apr: 0, baseApr: 0, manualGains: 0, advantagePercent: 0 };
+    return { positions: [], totalBtc: 0, compoundGains: 0, performanceData: [], apr: 0 };
   }
 
   const aprMap: Record<string, string> = {
@@ -31,7 +31,8 @@ export function useDashboardData() {
     return acc;
   }, {} as Record<string, { strategy: string; totalBtc: number; totalGains: number; count: number }>);
 
-  const positions = Object.values(grouped).map(g => ({
+  type GroupEntry = { strategy: string; totalBtc: number; totalGains: number; count: number };
+  const positions = (Object.values(grouped) as GroupEntry[]).map(g => ({
     id: g.strategy, // unique key for rendering
     strategy: g.strategy,
     amount: `${g.totalBtc.toFixed(6)} BTC${g.count > 1 ? ` (${g.count})` : ''}`,
@@ -50,8 +51,6 @@ export function useDashboardData() {
       ? [{ epoch: 'E1', gains: totalCompoundGains }]
       : [];
 
-  // Compound advantage: auto-compound vs manual (manual misses ~16% due to timing)
-  const manualGains = totalCompoundGains * 0.844; // 1 - (1/1+compoundBoost)
   const avgApr = rawPositions.reduce((sum, p) => {
     const a = p.strategy === 'Aggressive' ? aprs.aggressive : p.strategy === 'Balanced' ? aprs.balanced : aprs.conservative;
     return sum + a;
@@ -61,10 +60,7 @@ export function useDashboardData() {
     positions,
     totalBtc: totalValue,
     compoundGains: totalCompoundGains,
-    manualGains,
     performanceData,
     apr: parseFloat(avgApr.toFixed(2)),
-    baseApr: parseFloat((avgApr * 0.87).toFixed(2)),
-    advantagePercent: manualGains > 0 ? ((totalCompoundGains - manualGains) / manualGains * 100) : 18.4,
   };
 }

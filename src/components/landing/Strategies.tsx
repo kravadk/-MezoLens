@@ -65,6 +65,7 @@ export default function Strategies() {
         >
           <h2 className="text-[26px] font-[700] text-[#1A1A1A] mb-2">Three strategies. One vault.</h2>
           <p className="text-[15px] text-[#888]">All include auto-compound. Choose your risk.</p>
+          <p className="text-[12px] text-[#AAA] mt-1">APR ranges are mainnet projections. Testnet uses mock reward parameters.</p>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">

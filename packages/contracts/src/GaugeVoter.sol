@@ -8,11 +8,9 @@ import {IGaugeController} from "./interfaces/IGaugeController.sol";
 /// @notice Analyzes gauges and votes on the highest-APR option
 /// @dev Uses mock gauge data when Mezo gauge precompiles are unavailable
 contract GaugeVoter is Ownable {
-    // --- State ---
     IGaugeController public gaugeController;
     address public vault;
 
-    // --- Mock gauge data (fallback when precompiles unavailable) ---
     struct MockGauge {
         address gauge;
         address pool;
@@ -28,7 +26,6 @@ contract GaugeVoter is Ownable {
     address public lastVotedGauge;
     uint256 public lastVoteEpoch;
 
-    // --- Events ---
     event GaugeVoted(address indexed gauge, uint256 weight, uint256 epoch);
     event BestGaugeChanged(address indexed oldGauge, address indexed newGauge, uint256 newApr);
     event MockGaugeAdded(address indexed gauge, uint256 apr);
@@ -52,7 +49,6 @@ contract GaugeVoter is Ownable {
         }
     }
 
-    // --- Core functions ---
 
     /// @notice Get all active gauges with their APRs
     /// @return gauges Array of mock gauge structs
@@ -128,7 +124,6 @@ contract GaugeVoter is Ownable {
         emit GaugeVoted(best, veBtcWeight, epoch);
     }
 
-    // --- Admin ---
 
     function setVault(address _vault) external onlyOwner {
         if (_vault == address(0)) revert ZeroAddress();
@@ -160,7 +155,6 @@ contract GaugeVoter is Ownable {
         mockGauges[idx].isAlive = _alive;
     }
 
-    // --- Internal ---
 
     function _initMockGauges() internal {
         // Default mock gauges for testnet

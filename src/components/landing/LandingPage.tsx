@@ -12,6 +12,7 @@ import Strategies from './Strategies';
 import Integrations from './Integrations';
 import Fees from './Fees';
 import ComparisonTable from './ComparisonTable';
+import WhyMezoLens from './WhyMezoLens';
 import BottomCTA from './BottomCTA';
 import Footer from './Footer';
 
@@ -42,6 +43,7 @@ export function LandingPage() {
         <TrustStrip />
         <div id="live-metrics"><LiveMetrics /></div>
         <div id="features"><ProblemSolution /></div>
+        <WhyMezoLens />
         <div id="how-it-works"><HowItWorks /></div>
         <CompoundChart />
         <div id="strategies"><Strategies /></div>

@@ -42,7 +42,7 @@ export default function BottomCTA() {
             transition={{ delay: 0.1 }}
             className="text-[34px] font-[700] text-white mb-3"
           >
-            Ready to compound?
+            Open your Bitcoin bank.
           </motion.h2>
 
           <motion.p
@@ -52,7 +52,7 @@ export default function BottomCTA() {
             transition={{ delay: 0.18 }}
             className="text-[16px] text-white/50 mb-8"
           >
-            Deposit BTC. Choose strategy. Earn forever.
+            Deposit BTC. Borrow MUSD at 1%. Earn yield. Close anytime.
           </motion.p>
 
           <motion.button

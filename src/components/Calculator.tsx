@@ -39,9 +39,13 @@ export function Calculator() {
 
   const generateData = () => {
     const data = [];
+    // Protocol compounds weekly (52 epochs/year). Convert months to weeks for accuracy.
+    const weeksPerMonth = 52 / 12;
+    const weeklyRate = currentApr / 52; // rate per weekly epoch
     for (let i = 0; i <= months; i++) {
-      const manualVal = btcAmount * (manualApr / 12) * i;            // simple interest gains
-      const compoundGains = btcAmount * Math.pow(1 + currentApr / 12, i) - btcAmount; // compound gains
+      const weeks = i * weeksPerMonth;
+      const manualVal = btcAmount * manualApr * (i / 12);             // simple interest: no compounding
+      const compoundGains = btcAmount * Math.pow(1 + weeklyRate, weeks) - btcAmount; // weekly compounding
       data.push({
         month: `M${i}`,
         manual: Number(manualVal.toFixed(6)),

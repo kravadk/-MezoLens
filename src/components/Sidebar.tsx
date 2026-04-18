@@ -11,6 +11,8 @@ import {
   Landmark,
   ShieldCheck,
   ShieldAlert,
+  TrendingUp,
+  Eye,
 } from 'lucide-react';
 import { useStore } from '../store';
 import { useUIStore, type Page } from '../store/uiStore';
@@ -22,11 +24,13 @@ import { useMusdCdp } from '../hooks/useMusdCdp';
 
 const navItems: { label: string; icon: React.ElementType; page: Page; badge?: string }[] = [
   { label: 'Dashboard', icon: LayoutDashboard, page: 'Dashboard' },
-  { label: 'Deposit', icon: ArrowDownToLine, page: 'Deposit' },
   { label: 'Banking', icon: Landmark, page: 'Banking', badge: 'MUSD' },
+  { label: 'Deposit', icon: ArrowDownToLine, page: 'Deposit' },
+  { label: 'My Positions', icon: ClipboardList, page: 'My Positions' },
+  { label: 'Analytics', icon: TrendingUp, page: 'Analytics', badge: 'NEW' },
+  { label: 'Watchlist', icon: Eye, page: 'Watchlist', badge: 'NEW' },
   { label: 'Calculator', icon: Calculator, page: 'Calculator' },
   { label: 'Transparency', icon: BarChart3, page: 'Transparency' },
-  { label: 'My Positions', icon: ClipboardList, page: 'My Positions' },
   { label: 'Vault Stats', icon: Building2, page: 'Vault Stats' },
 ];
 
@@ -59,11 +63,13 @@ export function Sidebar() {
                   : "text-mezo-grey hover:bg-white/5 hover:text-white"
               )}
             >
-              <item.icon className={cn(
-                "w-5 h-5 transition-colors",
-                isActive ? "text-mezo-sidebar" : "text-mezo-grey group-hover:text-white"
-              )} />
-              <span className="text-[14px] font-medium flex-1">{item.label}</span>
+              <span className="w-5 h-5 flex items-center justify-center shrink-0">
+                <item.icon className={cn(
+                  "w-[18px] h-[18px] transition-colors",
+                  isActive ? "text-mezo-sidebar" : "text-mezo-grey group-hover:text-white"
+                )} />
+              </span>
+              <span className="text-[14px] font-medium flex-1 text-left">{item.label}</span>
               {item.badge && (
                 <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#5B6DEC]/20 text-[#5B6DEC]">
                   {item.badge}
@@ -89,7 +95,7 @@ export function Sidebar() {
             <span className="text-[12px] text-mezo-lime font-bold">Mezo Testnet</span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Epoch {epochData.number || 42}</span>
+            <span className="text-[11px] text-white/40 uppercase tracking-wider font-semibold">Epoch {epochData.number || '—'}</span>
             <div className="flex items-center gap-1.5">
               {cdp?.active && (
                 <div className={`w-2 h-2 rounded-full flex-shrink-0 ${cdp.ratio < 160 ? 'bg-[#FF6B6B] animate-pulse' : cdp.ratio < 180 ? 'bg-[#FFD93D]' : 'bg-mezo-lime'}`} title={`CDP ${cdp.ratio.toFixed(0)}%`} />

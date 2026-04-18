@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { readContract } from 'wagmi/actions';
+import { formatUnits } from 'viem';
 import { wagmiConfig, mezoTestnet } from '../lib/wagmi';
 import { MEZO_ADDRESSES } from '../config/mezo';
+import { MEZO_BORROW_CONTRACTS, MEZO_PRICE_FEED_ABI } from '../config/contracts';
 
 const PYTH_ABI = [
   {
@@ -28,6 +30,24 @@ export function useBtcPrice(): number {
 
   useEffect(() => {
     const load = async () => {
+      // Primary: Mezo PriceFeed (same oracle the protocol uses for ICR)
+      try {
+        const raw = await readContract(wagmiConfig, {
+          address: MEZO_BORROW_CONTRACTS.priceFeed,
+          abi: MEZO_PRICE_FEED_ABI,
+          functionName: 'fetchPrice',
+          chainId: mezoTestnet.id,
+        }) as bigint;
+        const usdPrice = parseFloat(formatUnits(raw, 18));
+        if (usdPrice > 1000 && usdPrice < 1_000_000) {
+          setPrice(Math.round(usdPrice));
+          return;
+        }
+      } catch {
+        // fall through to Pyth
+      }
+
+      // Fallback: Pyth oracle
       try {
         const result = await readContract(wagmiConfig, {
           address: MEZO_ADDRESSES.pythOracle,
@@ -41,11 +61,11 @@ export function useBtcPrice(): number {
         const expo = Number(result.expo);
         const usdPrice = rawPrice * Math.pow(10, expo);
 
-        if (usdPrice > 1000 && usdPrice < 1000000) {
+        if (usdPrice > 1000 && usdPrice < 1_000_000) {
           setPrice(Math.round(usdPrice));
         }
       } catch {
-        // Keep fallback
+        // Keep current price
       }
     };
 

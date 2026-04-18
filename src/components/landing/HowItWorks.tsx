@@ -57,7 +57,7 @@ export default function HowItWorks() {
     {
       num: '03',
       title: 'MUSD earns LP yield',
-      text: 'Minted MUSD is deployed into Mezo Swap liquidity pools. LP fees and rewards flow back — more than covering the 1% borrow cost.',
+      text: 'Minted MUSD is deployed into Mezo Swap liquidity pools (mainnet). LP fees and rewards flow back — more than covering the 1% borrow cost.',
       badge: 'Net positive yield',
       badgeColor: 'bg-[#FFF4E5] text-[#D4940A]',
       icon: (

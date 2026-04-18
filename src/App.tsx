@@ -9,6 +9,8 @@ import { Transparency } from './components/Transparency';
 import { MyPositions } from './components/MyPositions';
 import { VaultStats } from './components/VaultStats';
 import { Banking } from './components/Banking';
+import { Analytics } from './components/Analytics';
+import { Watchlist } from './components/Watchlist';
 import { OnboardingWizard } from './components/OnboardingWizard';
 import { LandingPage } from './components/landing/LandingPage';
 import { WalletModal } from './components/modals/WalletModal';
@@ -55,6 +57,8 @@ export default function App() {
       case 'Transparency': return <Transparency />;
       case 'My Positions': return <MyPositions />;
       case 'Vault Stats': return <VaultStats />;
+      case 'Analytics': return <Analytics />;
+      case 'Watchlist': return <Watchlist />;
       default: return <Dashboard />;
     }
   };
@@ -68,6 +72,8 @@ export default function App() {
       case 'Transparency': return { title: 'Transparency', subtitle: 'Real-time protocol revenue and fees' };
       case 'My Positions': return { title: 'My Positions', subtitle: 'Manage your active staking vaults' };
       case 'Vault Stats': return { title: 'Vault Stats', subtitle: 'Public protocol performance metrics' };
+      case 'Analytics': return { title: 'Portfolio Analytics', subtitle: 'BTC yield vs hodl · breakeven calculator' };
+      case 'Watchlist': return { title: 'Watchlist', subtitle: 'Monitor multiple wallets · ICR alerts' };
       default: return { title: 'Dashboard', subtitle: '' };
     }
   };

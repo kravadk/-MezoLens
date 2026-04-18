@@ -49,7 +49,6 @@ export function Transparency() {
         <StatCard
           label="Total Revenue (All Time)"
           value={`${fees.totalRevenue} BTC`}
-          trend={12.4}
           subtitle="Protocol lifetime revenue"
           icon={<TrendingUp className="w-4 h-4 text-mezo-grey" />}
         />
@@ -143,7 +142,8 @@ export function Transparency() {
         {/* Fee Source Pie */}
         <div className="lg:col-span-1 glass-card p-8">
           <h2 className="text-[20px] font-extrabold text-mezo-black mb-2">Fee Sources</h2>
-          <p className="text-[14px] text-mezo-grey mb-8">Where protocol fees come from</p>
+          <p className="text-[14px] text-mezo-grey mb-2">Where protocol fees come from</p>
+          <p className="text-[11px] text-mezo-grey/60 italic mb-6">Illustrative — based on expected fee mix</p>
           <div className="h-[200px] w-full mb-8">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>

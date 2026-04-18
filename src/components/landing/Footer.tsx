@@ -8,14 +8,20 @@ export default function Footer() {
             <img src="/logo.png" alt="MezoLens" className="w-7 h-7 rounded-lg" />
             <span className="font-bold text-[15px] text-white">MezoLens</span>
           </div>
-          <p className="text-[13px] text-white/40">Auto-compound yield vault for Mezo Earn</p>
+          <p className="text-[13px] text-white/40">Self-service Bitcoin banking on Mezo</p>
+          <div className="flex flex-col gap-1 mt-2">
+            <p className="text-[11px] text-white/30 font-bold uppercase tracking-wider">Roadmap</p>
+            {['Mainnet deploy', 'Mobile app', 'Multi-collateral MUSD', 'Keeper bot SDK'].map((item) => (
+              <p key={item} className="text-[12px] text-white/30">→ {item}</p>
+            ))}
+          </div>
         </div>
 
         {/* Center */}
         <div className="flex items-center md:justify-center gap-6">
           {[
             { label: 'Docs', href: 'https://mezo.org/docs/developers/' },
-            { label: 'GitHub', href: 'https://github.com' },
+            { label: 'GitHub', href: 'https://github.com/kravadk/mezolens' },
             { label: 'Mezo', href: 'https://mezo.org' },
             { label: 'Explorer', href: 'https://explorer.test.mezo.org' },
           ].map((link) => (

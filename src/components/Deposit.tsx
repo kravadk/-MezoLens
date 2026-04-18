@@ -68,7 +68,7 @@ export function Deposit() {
   const [selectedStrategy, setSelectedStrategy] = useState<string | null>(null);
   const [btcAmount, setBtcAmount] = useState('');
   const [mezoAmount, setMezoAmount] = useState('');
-  const [musdEnabled, setMusdEnabled] = useState(false);
+  const [musdEnabled, setMusdEnabled] = useState(true);
   const [musdPercent, setMusdPercent] = useState(20);
   const [txModalOpen, setTxModalOpen] = useState(false);
   const [txStatus, setTxStatus] = useState<'pending' | 'success' | 'error'>('pending');
@@ -143,8 +143,8 @@ export function Deposit() {
           <Wallet className="w-12 h-12 text-mezo-lime/60" />
         </div>
         <div className="max-w-md">
-          <h2 className="text-[28px] font-extrabold text-mezo-black leading-tight">Connect to Deposit</h2>
-          <p className="text-[15px] text-mezo-grey mt-3">Connect your wallet to start staking BTC and earning auto-compound yield.</p>
+          <h2 className="text-[28px] font-extrabold text-mezo-black leading-tight">Open a Bitcoin Bank Position</h2>
+          <p className="text-[15px] text-mezo-grey mt-3">Deposit BTC as collateral, borrow MUSD at 1% fixed, earn LP yield — self-service banking on Mezo.</p>
         </div>
         <button
           onClick={openWalletModal}
@@ -329,8 +329,8 @@ export function Deposit() {
                             <Zap className="w-5 h-5 text-strategy-balanced" />
                           </div>
                           <div>
-                            <h4 className="text-[15px] font-bold text-mezo-black">MUSD Yield <span className="text-[11px] font-semibold text-strategy-conservative bg-strategy-conservative/10 px-2 py-0.5 rounded-full ml-1">Recommended</span></h4>
-                            <p className="text-[12px] text-mezo-grey">Borrow MUSD at 1% → deploy to LP → earn net yield</p>
+                            <h4 className="text-[15px] font-bold text-mezo-black">MUSD Banking <span className="text-[11px] font-semibold text-strategy-conservative bg-strategy-conservative/10 px-2 py-0.5 rounded-full ml-1">Core Feature</span></h4>
+                            <p className="text-[12px] text-mezo-grey">Borrow MUSD at 1% fixed → LP yield covers cost → net positive</p>
                           </div>
                         </div>
                         <button
@@ -398,7 +398,7 @@ export function Deposit() {
               : selectedStrategy === 'balanced'
               ? aprs.balanced
               : aprs.conservative;
-            const baseApr = selectedApr * 0.91; // compound ~9% better than base
+            const baseApr = selectedApr;
             const projectionData = buildProjection(btcNum, selectedApr);
             const withoutCompound = btcNum * (1 + selectedApr / 100 * (8 / 52));
             const withCompound = projectionData[projectionData.length - 1]?.total || btcNum;
@@ -447,15 +447,20 @@ export function Deposit() {
                   </div>
                   <div className="space-y-5">
                     <div className="flex justify-between items-center">
-                      <span className="text-[14px] text-mezo-grey">Base APR</span>
-                      <span className="text-[14px] font-extrabold text-mezo-black">{baseApr.toFixed(1)}%</span>
+                      <span className="text-[14px] text-mezo-grey">Weekly epoch rate</span>
+                      <span className="text-[14px] font-extrabold text-mezo-black">{(selectedApr / 52).toFixed(2)}% / epoch</span>
                     </div>
                     <div className="flex justify-between items-center">
-                      <span className="text-[14px] text-mezo-grey">Compound APR</span>
-                      <span className="text-[14px] font-extrabold text-strategy-conservative">{selectedApr.toFixed(1)}%</span>
+                      <span className="text-[14px] text-mezo-grey">Compound frequency</span>
+                      <span className="text-[14px] font-extrabold text-mezo-black">Weekly (52×/yr)</span>
                     </div>
                     <div className="flex justify-between items-center pt-5 border-t border-mezo-black">
-                      <span className="text-[16px] font-extrabold text-mezo-black">Total APR</span>
+                      <div>
+                        <span className="text-[16px] font-extrabold text-mezo-black">Estimated APR</span>
+                        {selectedApr > 30 && (
+                          <span className="ml-2 text-[10px] font-bold text-[#D4940A] bg-[#FFF4E5] px-1.5 py-0.5 rounded-full">testnet mock</span>
+                        )}
+                      </div>
                       <span className="text-[28px] font-extrabold text-strategy-conservative">{selectedApr.toFixed(1)}%</span>
                     </div>
                   </div>
@@ -479,8 +484,9 @@ export function Deposit() {
                 </div>
                 <div className="mt-6 p-4 bg-mezo-lime/10 rounded-xl border border-mezo-lime/20">
                   <p className="text-[13px] text-mezo-sidebar font-bold">
-                    After 8 epochs: {withCompound.toFixed(8)} BTC (vs {withoutCompound.toFixed(8)} without compound = <span className="text-strategy-conservative">+{gainPct.toFixed(2)}%</span>)
+                    After 8 epochs: {withCompound.toFixed(8)} BTC · compound advantage: <span className="text-strategy-conservative">+{gainPct.toFixed(2)}%</span> vs simple interest
                   </p>
+                  <p className="text-[11px] text-mezo-grey mt-1">APR is read live from EarnVault on Mezo Testnet. Testnet uses mock reward rates — mainnet values will reflect real Mezo Earn emissions.</p>
                 </div>
               </div>
 
@@ -521,9 +527,9 @@ export function Deposit() {
                 <Check className="w-12 h-12 text-white" />
               </div>
               <div>
-                <h2 className="text-[36px] font-extrabold text-mezo-black leading-tight">Position Created!</h2>
+                <h2 className="text-[36px] font-extrabold text-mezo-black leading-tight">Bitcoin Bank Position Open!</h2>
                 <p className="text-[16px] text-mezo-grey mt-4 font-medium max-w-md mx-auto">
-                  Your BTC is now auto-compounding. Track your rewards in real-time on the dashboard.
+                  BTC locked. MUSD minted at 1%. LP yield covering borrow cost. Auto-compound running every epoch.
                 </p>
               </div>
               <a
@@ -561,7 +567,7 @@ export function Deposit() {
             disabled={currentStep === 0 && !selectedStrategy}
             className="px-12 py-5 bg-mezo-lime text-mezo-sidebar rounded-2xl font-extrabold flex items-center gap-3 hover:opacity-90 transition-all active:scale-95 disabled:opacity-50 shadow-lg shadow-mezo-lime/20"
           >
-            <span>{currentStep === 2 ? 'Confirm & Stake BTC' : 'Next Step'}</span>
+            <span>{currentStep === 2 ? 'Open Bitcoin Bank Position' : 'Next Step'}</span>
             <ChevronRight className="w-5 h-5" />
           </button>
         </div>

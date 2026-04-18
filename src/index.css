@@ -43,7 +43,10 @@
   }
 
   .sidebar-item-active {
-    @apply bg-mezo-lime text-mezo-sidebar font-semibold;
+    @apply bg-mezo-lime text-mezo-sidebar;
+  }
+  .sidebar-item-active span {
+    @apply font-semibold text-mezo-sidebar;
   }
 
   .content-glow {

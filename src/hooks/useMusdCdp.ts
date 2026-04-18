@@ -51,18 +51,7 @@ export function useMusdCdp(positionId = 0) {
           safe: healthRaw.safe,
         });
       } catch {
-        // Contract unavailable — return mock for demo
-        setCdp({
-          collateral: 0.05,
-          debt: 2680,
-          lpTokens: 2680,
-          lpDeployed: 2680,
-          totalYield: 67,
-          active: true,
-          ratio: 180,
-          liqPrice: 53600,
-          safe: true,
-        });
+        setCdp(null);
       }
     };
     load();

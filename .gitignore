@@ -7,8 +7,11 @@ coverage/
 .env*
 !.env.example
 
-# Claude Code
+# Editor & AI assistant configs
 .claude/
+.cursor/
+.aider/
+.vscode/
 
 # Foundry
 packages/contracts/out/

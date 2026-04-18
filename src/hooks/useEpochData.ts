@@ -13,22 +13,13 @@ export interface EpochData {
 }
 
 function buildFallbackEpoch() {
-  const now = Date.now();
-  const epochDuration = 7 * 24 * 60 * 60 * 1000;
-  const epochStart = now - epochDuration * 0.72;
-  const epochEnd = epochStart + epochDuration;
-  const remaining = Math.max(epochEnd - now, 0);
   return {
-    number: 42,
-    startTime: epochStart / 1000,
-    endTime: epochEnd / 1000,
-    progress: 72,
-    timeRemaining: {
-      days: Math.floor(remaining / (24 * 60 * 60 * 1000)),
-      hours: Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)),
-      minutes: Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000)),
-    },
-    feeBreakdown: { swap: 58, borrow: 31, bridge: 11 },
+    number: 0,
+    startTime: 0,
+    endTime: 0,
+    progress: 0,
+    timeRemaining: { days: 0, hours: 0, minutes: 0 },
+    feeBreakdown: { swap: 0, borrow: 0, bridge: 0 },
   };
 }
 
@@ -63,7 +54,7 @@ export function useEpochData(): EpochData {
             hours: Math.floor((remaining % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000)),
             minutes: Math.floor((remaining % (60 * 60 * 1000)) / (60 * 1000)),
           },
-          feeBreakdown: { swap: 58, borrow: 31, bridge: 11 },
+          feeBreakdown: { swap: 0, borrow: 0, bridge: 0 },
         });
       } catch {
         // Keep fallback (already set as initial state)
