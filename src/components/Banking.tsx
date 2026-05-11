@@ -268,7 +268,6 @@ export function Banking() {
     open: boolean; status: 'pending' | 'success' | 'error'; hash?: string; title: string;
   }>({ open: false, status: 'pending', title: '' });
 
-  // ── Interactive MUSD calculator ──
   const [calcBtc, setCalcBtc] = useState('0.1');
   const [musdMode, setMusdMode] = useState<'lp' | 'stability'>('lp');
   const calcBtcNum = parseFloat(calcBtc) || 0;

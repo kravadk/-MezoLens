@@ -87,6 +87,29 @@ Net effect: BTC generates yield without being sold, users avoid the manual-claim
 | PriceFeed | [`0x86bCF0841622a5dAC14A313a15f96A95421b9366`](https://explorer.test.mezo.org/address/0x86bCF0841622a5dAC14A313a15f96A95421b9366) |
 | MUSD Token | [`0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503`](https://explorer.test.mezo.org/address/0x118917a40FAF1CD7a13dB0Ef56C86De7973Ac503) |
 
+## Demo & Proof
+
+The whole flow has been exercised against live Mezo Testnet with a funded wallet. Run it yourself:
+
+```bash
+cp .env.example .env        # add PRIVATE_KEY (funded testnet key)
+node test-full-debug.mjs    # reads every contract, simulates each write, then sends real txs
+```
+
+It checks RPC + bytecode for all 10 contracts, reads PriceFeed / EarnVault stats / per-strategy APR / epoch / FeeCollector / MusdPipe / TroveManager, simulates every write (decoding the custom-error selector on revert), then sends real transactions and diffs the BTC/MUSD balances before and after — printing every tx hash with an explorer link.
+
+Confirmed testnet transactions (examples):
+
+| Action | Tx | Block |
+|---|---|---|
+| `openTrove(0.03 BTC / 1800 MUSD)` | [`0x1527e19b…`](https://explorer.test.mezo.org/tx/0x1527e19b19b9cfd9692cc1a71e0a12b260a895dc197ddfc274203e581bd4d248) | 12445135 |
+| `addColl(0.001 BTC)` | [`0x098d0a72…`](https://explorer.test.mezo.org/tx/0x098d0a7250a1f8de2135230f78cf561a3d9d0b35b57ad8f1ef52a87916223532) | 12445164 |
+| `deposit(strategy, 0.00005 BTC)` | [`0x67c2991e…`](https://explorer.test.mezo.org/tx/0x67c2991e) | 12445711 |
+| `claimWithoutCompound(#2)` | [`0xe284a1d0…`](https://explorer.test.mezo.org/tx/0xe284a1d0) | 12445718 |
+| `changeStrategy(#21 → Aggressive)` | [`0xb7e7928b…`](https://explorer.test.mezo.org/tx/0xb7e7928b) | 12445720 |
+
+Wallet activity: [`0x0E437c109A4C1e15172c4dA557E77724D7243F71`](https://explorer.test.mezo.org/address/0x0E437c109A4C1e15172c4dA557E77724D7243F71). A narrated walkthrough video accompanies the hackathon submission.
+
 ## Local Setup
 
 Prerequisites: Node 20+, npm, Foundry (`curl -L https://foundry.paradigm.xyz | bash`).
