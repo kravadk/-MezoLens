@@ -1,11 +1,19 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ShieldCheck, ArrowDownToLine, Landmark, Check, X, ExternalLink, ChevronRight } from 'lucide-react';
+import { ShieldCheck, ArrowDownToLine, Landmark, Check, X, ExternalLink, ChevronRight, FlaskConical } from 'lucide-react';
 import { useUIStore } from '../store/uiStore';
 
 const ONBOARDING_KEY = 'mezolens_onboarded';
 
 const steps = [
+  {
+    icon: <FlaskConical className="w-10 h-10 text-[#5B6DEC]" />,
+    bg: 'bg-[#E5E8FD]',
+    title: 'Try it in 2 minutes',
+    text: 'You\'re on Mezo Testnet (chainId 31611) — nothing here uses real money. Get free test BTC from the faucet, keep your wallet on Mezo Testnet, then follow the three steps below.',
+    cta: { label: 'Open Mezo faucet →', href: 'https://faucet.test.mezo.org', external: true },
+    skip: 'I already have test BTC',
+  },
   {
     icon: <ShieldCheck className="w-10 h-10 text-[#D4940A]" />,
     bg: 'bg-[#FFF4E5]',
